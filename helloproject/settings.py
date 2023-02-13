@@ -14,6 +14,7 @@ import os
 import google_crc32c
 import dj_database_url
 
+
 def access_secret_version(project_id='able-door-377617',
                           secret_id='django-settings', version_id=2):
     """
@@ -40,6 +41,7 @@ def access_secret_version(project_id='able-door-377617',
         return response
     return response.payload.data.decode('UTF-8')
 
+
 env_variables = access_secret_version()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -60,16 +62,24 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.staticfiles',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     'home',
 ]
 
 MIDDLEWARE = [
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
 url = '='.join(env_variables.split('\n')[0].split('=')[1:])
 
 DATABASES = {
@@ -84,9 +94,11 @@ TEMPLATES = [
         'DIRS': ['home/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
@@ -94,6 +106,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'helloproject.wsgi.application'
 
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 

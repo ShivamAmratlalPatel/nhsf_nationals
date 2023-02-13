@@ -20,11 +20,11 @@ class Chapter(models.Model):
         return self.name
 
 
-class Team(models.Model):
+class FootballTeam(models.Model):
     team_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE)
-    sport = models.ForeignKey(Sport, on_delete=models.CASCADE)
+    group = models.IntegerField()
 
     def __str__(self):
         return self.name
@@ -40,12 +40,13 @@ class FootballPitch(models.Model):
 
 class FootballSchedule(models.Model):
     schedule_id = models.AutoField(primary_key=True)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE,
+    team = models.ForeignKey(FootballTeam, on_delete=models.CASCADE,
                              related_name="team")
-    opponent = models.ForeignKey(Team, on_delete=models.CASCADE,
+    opponent = models.ForeignKey(FootballTeam, on_delete=models.CASCADE,
                                  related_name="opponent", null=True)
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
+    played = models.BooleanField(default=False)
     team_penalty = models.IntegerField(null=True)
     opponent_penalty = models.IntegerField(null=True)
     time = models.TimeField()
@@ -78,3 +79,19 @@ class FootballSchedule(models.Model):
             return f"{self.team_score} - {self.opponent_score} \n (Penalties: {self.team_penalty} - {self.opponent_penalty}) "
         else:
             return f"{self.team_score} - {self.opponent_score}"
+
+
+class FootballTable(models.Model):
+    id = models.AutoField(primary_key=True)
+    team_id = models.ForeignKey(FootballTeam, on_delete=models.CASCADE)
+    played = models.IntegerField()
+    won = models.IntegerField()
+    drawn = models.IntegerField()
+    lost = models.IntegerField()
+    goals_for = models.IntegerField()
+    goals_against = models.IntegerField()
+    goal_difference = models.IntegerField()
+    points = models.IntegerField()
+
+    def __str__(self):
+        return self.team.name
