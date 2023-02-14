@@ -20,11 +20,6 @@ def index(request):
 def football(request):
     """Return the football.html template in template/home"""
 
-    update_football_table(1)
-    update_football_table(2)
-    update_football_table(3)
-    update_football_table(4)
-
     template: Template = loader.get_template("football.html")
     context = {
         "schedules": get_football_schedule(),

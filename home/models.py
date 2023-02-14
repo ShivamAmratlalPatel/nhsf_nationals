@@ -5,7 +5,7 @@ from django.db import models
 
 
 class Sport(models.Model):
-    sport_id = models.AutoField(primary_key=True)
+    sport_id = models.AutoField(primary_key=True, db_index=True)
     name = models.CharField(max_length=200)
 
     def __str__(self):
@@ -13,7 +13,7 @@ class Sport(models.Model):
 
 
 class Chapter(models.Model):
-    chapter_id = models.AutoField(primary_key=True)
+    chapter_id = models.AutoField(primary_key=True, db_index=True)
     name = models.CharField(max_length=200)
 
     def __str__(self):
@@ -21,7 +21,7 @@ class Chapter(models.Model):
 
 
 class FootballTeam(models.Model):
-    team_id = models.AutoField(primary_key=True)
+    team_id = models.AutoField(primary_key=True, db_index=True)
     name = models.CharField(max_length=200)
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE)
     group = models.IntegerField()
@@ -31,7 +31,7 @@ class FootballTeam(models.Model):
 
 
 class FootballPitch(models.Model):
-    pitch_id = models.AutoField(primary_key=True)
+    pitch_id = models.AutoField(primary_key=True, db_index=True)
     name = models.CharField(max_length=200)
 
     def __str__(self):
@@ -39,7 +39,7 @@ class FootballPitch(models.Model):
 
 
 class FootballSchedule(models.Model):
-    schedule_id = models.AutoField(primary_key=True)
+    schedule_id = models.AutoField(primary_key=True, db_index=True)
     team = models.ForeignKey(FootballTeam, on_delete=models.CASCADE,
                              related_name="team")
     opponent = models.ForeignKey(FootballTeam, on_delete=models.CASCADE,
@@ -82,7 +82,7 @@ class FootballSchedule(models.Model):
 
 
 class FootballTable(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True, db_index=True)
     team_id = models.ForeignKey(FootballTeam, on_delete=models.CASCADE)
     played = models.IntegerField()
     won = models.IntegerField()
@@ -94,4 +94,4 @@ class FootballTable(models.Model):
     points = models.IntegerField()
 
     def __str__(self):
-        return self.team.name
+        return self.team_id.name

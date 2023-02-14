@@ -10,14 +10,15 @@ def get_football_schedule() -> dict:
     schedule = FootballSchedule.objects.select_related(
         "pitch_id").all().order_by(
         "time").values("pitch_id__name", "team__name", "opponent__name",
-                       "team_score", "opponent_score", "time")
+                       "team_score", "opponent_score", "time", "played")
     pitches = FootballPitch.objects.all().values("name")
     output = {pitch["name"]: [] for pitch in pitches}
 
     [output[game["pitch_id__name"]].append(
         {"game": f"{game['team__name']} vs {game['opponent__name']}",
          "time": game["time"].strftime("%H:%M"),
-         "result": f"{game['team_score']} - {game['opponent_score']}"})
+         "result": f"{game['team_score']} - {game['opponent_score']}",
+         "played": game["played"]})
         for game in
         schedule]
 
