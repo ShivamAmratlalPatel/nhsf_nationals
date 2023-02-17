@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <title>NHSF Nationals Sports Competition</title>
+    <title>NHSF (UK) Dharmic Games</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -28,7 +28,6 @@
         }
 
         .flex-parent-element {
-            align-items: center;
             padding: 20px;
             display: flex;
             flex-direction: row;
@@ -72,7 +71,7 @@
     </div>
 </div>
 
-<!-- Container (About Section) -->
+<!-- Container (SChedule Section) -->
 <div class="w3-content w3-container w3-padding-64" id="football">
     <div style="display: flex; justify-content: center">
         <span class=" w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Football</span>
@@ -86,15 +85,28 @@
                         <th>{{ pitch }}</th>
                     </tr>
                     {% for row1 in value %}
-                        <tr>
-                            <td>
-                                <p style="margin : 0; padding-top:0;">{{ row1.game }}</p>
-                                <p style="margin : 0; padding-top:0;">{{ row1.time }}</p>
-                                {% if row1.played %}
-                                    <p style="margin : 0; padding-top:0;">{{ row1.result }}</p>
-                                {% endif %}
-                            </td>
-                        </tr>
+                        {% if row1.played %}
+                            <tr style="background-color: lightgreen;">
+                                <td>
+                                    <p style="margin : 0; padding-top:0;">{{ row1.game }}</p>
+                                    {#                                <p style="margin : 0; padding-top:0;">{{ row1.time }}</p>#}
+                                    {#                                {% if row1.played %}#}
+                                    {#                                    <p style="margin : 0; padding-top:0;">{{ row1.result }}</p>#}
+                                    {#                                {% endif %}#}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% if not row1.played %}
+                            <tr style="background-color:#f1f1f1">
+                                <td>
+                                    <p style="margin : 0; padding-top:0;">{{ row1.game }}</p>
+                                    {#                                <p style="margin : 0; padding-top:0;">{{ row1.time }}</p>#}
+                                    {#                                {% if row1.played %}#}
+                                    {#                                    <p style="margin : 0; padding-top:0;">{{ row1.result }}</p>#}
+                                    {#                                {% endif %}#}
+                                </td>
+                            </tr>
+                        {% endif %}
                     {% endfor %}
 
                 </table>
@@ -103,40 +115,40 @@
         {% endfor %}
     </div>
 </div>
-<h2 class="w3-center">Group Stages</h2>
-<div>
-    {% for group, table in group_stages.items %}
-        <div>
-            <h3 class="w3-center">Group {{ group }}</h3>
-            <table class="w3-table-all w3-centered">
-                <tr>
-                    <th>Team</th>
-                    <th>Played</th>
-                    <th>Won</th>
-                    <th>Drawn</th>
-                    <th>Lost</th>
-                    <th>Goals For</th>
-                    <th>Goals Against</th>
-                    <th>Goal Difference</th>
-                    <th>Points</th>
-                </tr>
-                {% for value in table %}
-                    <tr>
-                        <td>{{ value.team }}</td>
-                        <td>{{ value.played }}</td>
-                        <td>{{ value.won }}</td>
-                        <td>{{ value.drawn }}</td>
-                        <td>{{ value.lost }}</td>
-                        <td>{{ value.goals_for }}</td>
-                        <td>{{ value.goals_against }}</td>
-                        <td>{{ value.goal_difference }}</td>
-                        <td>{{ value.points }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
-    {% endfor %}
-</div>
+{#<h2 class="w3-center">Group Stages</h2>#}
+{#<div>#}
+{#    {% for group, table in group_stages.items %}#}
+{#        <div>#}
+{#            <h3 class="w3-center">Group {{ group }}</h3>#}
+{#            <table class="w3-table-all w3-centered">#}
+{#                <tr>#}
+{#                    <th>Team</th>#}
+{#                    <th>Played</th>#}
+{#                    <th>Won</th>#}
+{#                    <th>Drawn</th>#}
+{#                    <th>Lost</th>#}
+{#                    <th>Goals For</th>#}
+{#                    <th>Goals Against</th>#}
+{#                    <th>Goal Difference</th>#}
+{#                    <th>Points</th>#}
+{#                </tr>#}
+{#                {% for value in table %}#}
+{#                    <tr>#}
+{#                        <td>{{ value.team }}</td>#}
+{#                        <td>{{ value.played }}</td>#}
+{#                        <td>{{ value.won }}</td>#}
+{#                        <td>{{ value.drawn }}</td>#}
+{#                        <td>{{ value.lost }}</td>#}
+{#                        <td>{{ value.goals_for }}</td>#}
+{#                        <td>{{ value.goals_against }}</td>#}
+{#                        <td>{{ value.goal_difference }}</td>#}
+{#                        <td>{{ value.points }}</td>#}
+{#                    </tr>#}
+{#                {% endfor %}#}
+{#            </table>#}
+{#        </div>#}
+{#    {% endfor %}#}
+{#</div>#}
 
 <!-- Footer -->
 <footer class="w3-center w3-black w3-padding-64 w3-opacity w3-hover-opacity-off">
@@ -184,15 +196,6 @@
         } else {
             x.className = x.className.replace(" w3-show", "");
         }
-    }
-
-    function btnClick() {
-        fetch('[host]/hello', {
-            method: 'GET'
-        })
-            .then((data) => {
-                console.log(data.text)
-            })
     }
 
 </script>

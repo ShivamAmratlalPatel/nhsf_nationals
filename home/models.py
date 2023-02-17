@@ -7,6 +7,7 @@ from django.db import models
 class Sport(models.Model):
     sport_id = models.AutoField(primary_key=True, db_index=True)
     name = models.CharField(max_length=200)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -15,6 +16,7 @@ class Sport(models.Model):
 class Chapter(models.Model):
     chapter_id = models.AutoField(primary_key=True, db_index=True)
     name = models.CharField(max_length=200)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -25,6 +27,7 @@ class FootballTeam(models.Model):
     name = models.CharField(max_length=200)
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE)
     group = models.IntegerField()
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -33,6 +36,7 @@ class FootballTeam(models.Model):
 class FootballPitch(models.Model):
     pitch_id = models.AutoField(primary_key=True, db_index=True)
     name = models.CharField(max_length=200)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -51,6 +55,7 @@ class FootballSchedule(models.Model):
     opponent_penalty = models.IntegerField(null=True)
     time = models.TimeField()
     pitch_id = models.ForeignKey(FootballPitch, on_delete=models.CASCADE)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.team.name} vs {self.opponent.name}"
@@ -92,6 +97,7 @@ class FootballTable(models.Model):
     goals_against = models.IntegerField()
     goal_difference = models.IntegerField()
     points = models.IntegerField()
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.team_id.name

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <title>NHSF Nationals Sports Competition</title>
+    <title>NHSF (UK) Dharmic Games</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -19,6 +19,20 @@
             line-height: 1.8;
         }
 
+        /* Create a Parallax Effect */
+        .bgimg-1, .bgimg-2, .bgimg-3 {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        /* First image (Logo. Full height) */
+        .bgimg-1 {
+            background-image: url('/w3images/parallax1.jpg');
+            min-height: 100%;
+        }
+
         .w3-wide {
             letter-spacing: 10px;
         }
@@ -29,6 +43,10 @@
 
         /* Turn off parallax scrolling for tablets and phones */
         @media only screen and (max-device-width: 1600px) {
+            .bgimg-1 {
+                background-attachment: scroll;
+                min-height: 400px;
+            }
         }
     </style>
 </head>
@@ -57,11 +75,10 @@
 </div>
 
 <!-- First Parallax Image with Logo Text -->
-<div class="w3-display-container w3-opacity-min" id="home">
-    <div class="w3-display-middle" style="white-space:nowrap;">
-        <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">NHSF <span
-                class="w3-hide-small w3-hide-medium">National Sports Competition</span> <span
-                class="w3-hide-large">NSC</span> 2023</span>
+<div class="bgimg-1 w3-display-container w3-opacity-min" id="home">
+    <div class="w3-display-middle" style="white-space">
+        <p class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">
+            NHSF (UK) Dharmic Games</p>
     </div>
 </div>
 
@@ -72,8 +89,6 @@
     <div class="w3-xlarge w3-section">
         <i class="fa fa-facebook-official w3-hover-opacity"></i>
         <i class="fa fa-instagram w3-hover-opacity"></i>
-        <i class="fa fa-snapchat w3-hover-opacity"></i>
-        <i class="fa fa-pinterest-p w3-hover-opacity"></i>
         <i class="fa fa-twitter w3-hover-opacity"></i>
         <i class="fa fa-linkedin w3-hover-opacity"></i>
     </div>
