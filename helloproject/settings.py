@@ -139,7 +139,8 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-LANGUAGE_CODE = 'en-us'
+# Set language code to UK
+LANGUAGE_CODE = 'en-gb'
 
 TIME_ZONE = 'UTC'
 
