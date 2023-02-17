@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 import os
 from django.http import HttpResponse
@@ -31,3 +32,11 @@ def loaderio(request):
     """Return the loaderio verification token"""
 
     return HttpResponse("loaderio-6f638dd217ebc0c6ad2e477d8e9e2e8c")
+
+
+@login_required
+def score(request):
+    """Return the score.html template in template/home"""
+
+    template: Template = loader.get_template("score.html")
+    return HttpResponse(template.render(context={}))
