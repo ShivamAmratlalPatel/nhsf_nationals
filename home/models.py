@@ -51,8 +51,8 @@ class FootballSchedule(models.Model):
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
-    time = models.TimeField()
-    pitch_id = models.ForeignKey(FootballPitch, on_delete=models.CASCADE)
+    time = models.TimeField(null=True)
+    pitch_id = models.ForeignKey(FootballPitch, on_delete=models.CASCADE, null=True)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):

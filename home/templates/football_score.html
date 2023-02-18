@@ -1,14 +1,14 @@
-{% extends 'base.html' %}
+{% extends 'base_scoring.html' %}
 
 {% block title %}Football Score{% endblock %}
 
 {% block content %}
 
-<!-- First Parallax Image with Logo Text -->
-<div class="bgimg-1 w3-display-container w3-opacity-min" id="home">
-    <div class="w3-display-middle" style="white-space: normal">
-        <p class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">
-            Scoring</p>
+
+
+<div class="w3-content w3-container w3-padding-64">
+    <div style="display: flex; justify-content: center">
+        <span class=" w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Football</span>
     </div>
 </div>
 
@@ -20,7 +20,7 @@
 {% endif %}
 
 <!--Create a form to log scores-->
-<div style="display: flex; align-items: center; justify-content: center;">
+<div style="margin: 0 auto; width: 80%">
     <div class="w3-container w3-card w3-white w3-round w3-margin">
         <br>
         <hr class="w3-clear">
@@ -30,10 +30,42 @@
             <p>{{ field.label_tag }} {{ field }}</p>
             {% endfor %}
             <input type="submit" value="Submit">
+            <p></p>
         </form>
     </div>
 </div>
 
-</div>
+<script>
+    // Modal Image Gallery
+    function onClick(element) {
+        document.getElementById("img01").src = element.src;
+        document.getElementById("modal01").style.display = "block";
+        let captionText = document.getElementById("caption");
+        captionText.innerHTML = element.alt;
+    }
 
+    // Change style of navbar on scroll
+    window.onscroll = function () {
+        myFunction()
+    };
+
+    function myFunction() {
+        let navbar = document.getElementById("myNavbar");
+        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+            navbar.className = "w3-bar" + " w3-card" + " w3-animate-top" + " w3-white";
+        } else {
+            navbar.className = navbar.className.replace(" w3-card w3-animate-top w3-white", "");
+        }
+    }
+
+    // Used to toggle the menu on small screens when clicking on the menu button
+    function toggleFunction() {
+        let x = document.getElementById("navDemo");
+        if (x.className.indexOf("w3-show") === -1) {
+            x.className += " w3-show";
+        } else {
+            x.className = x.className.replace(" w3-show", "");
+        }
+    }
+</script>
 {% endblock %}
