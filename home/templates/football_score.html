@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Football Score{% endblock %}
+
+{% block content %}
+
+<!-- First Parallax Image with Logo Text -->
+<div class="bgimg-1 w3-display-container w3-opacity-min" id="home">
+    <div class="w3-display-middle" style="white-space: normal">
+        <p class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">
+            Scoring</p>
+    </div>
+</div>
+
+<!--Show success message if success is true-->
+{% if success %}
+<div class="w3-container w3-green w3-center">
+    <h3>Score submitted successfully!</h3>
+</div>
+{% endif %}
+
+<!--Create a form to log scores-->
+<div style="display: flex; align-items: center; justify-content: center;">
+    <div class="w3-container w3-card w3-white w3-round w3-margin">
+        <br>
+        <hr class="w3-clear">
+        <form action="/score/" method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <p>{{ field.label_tag }} {{ field }}</p>
+            {% endfor %}
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</div>
+
+</div>
+
+{% endblock %}

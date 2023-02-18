@@ -51,8 +51,6 @@ class FootballSchedule(models.Model):
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
-    team_penalty = models.IntegerField(null=True)
-    opponent_penalty = models.IntegerField(null=True)
     time = models.TimeField()
     pitch_id = models.ForeignKey(FootballPitch, on_delete=models.CASCADE)
     is_deleted = models.BooleanField(default=False)
@@ -101,3 +99,18 @@ class FootballTable(models.Model):
 
     def __str__(self):
         return self.team_id.name
+
+
+class FootballKnockout(models.Model):
+    id = models.AutoField(primary_key=True, db_index=True)
+    team_id = models.ForeignKey(FootballTeam, on_delete=models.CASCADE)
+    opponent_id = models.ForeignKey(FootballTeam, on_delete=models.CASCADE,
+                                    related_name="opponent_id")
+    team_score = models.IntegerField(null=True)
+    opponent_score = models.IntegerField(null=True)
+    played = models.BooleanField(default=False)
+    team_penalty = models.IntegerField(null=True)
+    opponent_penalty = models.IntegerField(null=True)
+    time = models.TimeField()
+    pitch_id = models.ForeignKey(FootballPitch, on_delete=models.CASCADE)
+    is_deleted = models.BooleanField(default=False)

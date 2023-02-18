@@ -1,215 +1,129 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <title>NHSF (UK) Dharmic Games</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <style>
-        body, h1, h2, h3, h4, h5, h6 {
-            font-family: "Lato", sans-serif;
-        }
+{% extends 'base.html' %}
 
-        body, html {
-            height: 100%;
-            color: #777;
-            line-height: 1.8;
-        }
+{% block title %}Football{% endblock %}
 
-        .w3-wide {
-            letter-spacing: 10px;
-        }
-
-        .w3-hover-opacity {
-            cursor: pointer;
-        }
-
-        .flex-parent-element {
-            padding: 20px;
-            display: flex;
-            flex-direction: row;
-        }
-
-        .flex-child-element {
-            width: 100%;
-            padding: 20px;
-            align-items: center;
-        }
-
-        /* Turn off parallax scrolling for tablets and phones */
-        @media only screen and (max-device-width: 1200px) {
-
-            .flex-parent-element {
-                flex-direction: column;
-            }
-        }
-    </style>
-</head>
-<body>
-
-<!-- Navbar (sit on top) -->
-<div class="w3-top">
-    <div class="w3-bar" id="myNavbar">
-        <a class="w3-bar-item w3-button w3-hover-black w3-hide-medium w3-hide-large w3-right"
-           href="javascript:void(0);" onclick="toggleFunction()"
-           title="Toggle Navigation Menu">
-            <i class="fa fa-bars"></i>
-        </a>
-        <a href="/" class="w3-bar-item w3-button">HOME</a>
-        <a href="#football" class="w3-bar-item w3-button w3-hide-small"><i
-                class="fa fa-futbol-o"></i> Football</a>
-        {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}"
-               class="w3-bar-item w3-button w3-hide-small">Log Out</a>
-        {% else %}
-            <a href="{% url 'login' %}"
-               class="w3-bar-item w3-button w3-hide-small">Log In</a>
-        {% endif %}
-    </div>
-
-    <!-- Navbar on small screens -->
-    <div
-            class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium">
-        <a href="#football" class="w3-bar-item w3-button"
-           onclick="toggleFunction()">Football</a>
-    </div>
-</div>
+{% block content %}
 
 <!-- Container (Schedule Section) -->
-<div class="w3-content w3-container w3-padding-64" id="football">
-    <div style="display: flex; justify-content: center" id="home">
+<div class="w3-content w3-container w3-padding-64">
+    <div style="display: flex; justify-content: center">
         <span class=" w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Football</span>
     </div>
     <h3 class="w3-center">Schedule</h3>
     <div class="flex-parent-element">
         {% for pitch, value in schedules.items %}
-            <div class="flex-child-element">
-                <table class="w3-table-all w3-centered">
-                    <tr>
-                        <th>{{ pitch }}</th>
-                    </tr>
-                    {% for row1 in value %}
-                        {% if row1.played %}
-                            <tr style="background-color: lightgreen;">
-                                <td>
-                                    <p style="margin : 0; padding-top:0;">{{ row1.game }}</p>
-                                    {#                                <p style="margin : 0; padding-top:0;">{{ row1.time }}</p>#}
-                                    {#                                {% if row1.played %}#}
-                                    {#                                    <p style="margin : 0; padding-top:0;">{{ row1.result }}</p>#}
-                                    {#                                {% endif %}#}
-                                </td>
-                            </tr>
-                        {% endif %}
-                        {% if not row1.played %}
-                            <tr style="background-color:#f1f1f1">
-                                <td>
-                                    <p style="margin : 0; padding-top:0;">{{ row1.game }}</p>
-                                    {#                                <p style="margin : 0; padding-top:0;">{{ row1.time }}</p>#}
-                                    {#                                {% if row1.played %}#}
-                                    {#                                    <p style="margin : 0; padding-top:0;">{{ row1.result }}</p>#}
-                                    {#                                {% endif %}#}
-                                </td>
-                            </tr>
-                        {% endif %}
-                    {% endfor %}
+        <div class="flex-child-element">
+            <table class="w3-table-all w3-centered">
+                <tr>
+                    <th>{{ pitch }}</th>
+                </tr>
+                {% for row1 in value %}
+                {% if row1.played %}
+                <tr style="background-color: lightgreen;">
+                    <td>
+                        <p style="margin : 0; padding-top:0;">{{ row1.game }}</p>
+<!--                         <p style="margin : 0; padding-top:0;">{{ row1.time }}</p>-->
+<!--                         {% if row1.played %}-->
+<!--                         <p style="margin : 0; padding-top:0;">{{ row1.result }}</p>-->
+<!--                         {% endif %}-->
+                    </td>
+                </tr>
+                {% endif %}
+                {% if not row1.played %}
+                <tr style="background-color:#f1f1f1">
+                    <td>
+                        <p style="margin : 0; padding-top:0;">{{ row1.game }}</p>
+                         <p style="margin : 0; padding-top:0;">{{ row1.time }}</p>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
 
-                </table>
-            </div>
-            <br>
+            </table>
+        </div>
+        <br>
         {% endfor %}
     </div>
 </div>
-{#<h2 class="w3-center">Group Stages</h2>#}
-{#<div>#}
-{#    {% for group, table in group_stages.items %}#}
-{#        <div>#}
-{#            <h3 class="w3-center">Group {{ group }}</h3>#}
-{#            <table class="w3-table-all w3-centered">#}
-{#                <tr>#}
-{#                    <th>Team</th>#}
-{#                    <th>Played</th>#}
-{#                    <th>Won</th>#}
-{#                    <th>Drawn</th>#}
-{#                    <th>Lost</th>#}
-{#                    <th>Goals For</th>#}
-{#                    <th>Goals Against</th>#}
-{#                    <th>Goal Difference</th>#}
-{#                    <th>Points</th>#}
-{#                </tr>#}
-{#                {% for value in table %}#}
-{#                    <tr>#}
-{#                        <td>{{ value.team }}</td>#}
-{#                        <td>{{ value.played }}</td>#}
-{#                        <td>{{ value.won }}</td>#}
-{#                        <td>{{ value.drawn }}</td>#}
-{#                        <td>{{ value.lost }}</td>#}
-{#                        <td>{{ value.goals_for }}</td>#}
-{#                        <td>{{ value.goals_against }}</td>#}
-{#                        <td>{{ value.goal_difference }}</td>#}
-{#                        <td>{{ value.points }}</td>#}
-{#                    </tr>#}
-{#                {% endfor %}#}
-{#            </table>#}
-{#        </div>#}
-{#    {% endfor %}#}
-{#</div>#}
+<!--<h2 class="w3-center">Group Stages</h2>-->
+<!--<div>-->
+<!--    {% for group, table in group_stages.items %}-->
+<!--    <div>-->
+<!--         <h3 class="w3-center">Group {{ group }}</h3>-->
 
-<!-- Footer -->
-<footer class="w3-center w3-black w3-padding-64 w3-opacity w3-hover-opacity-off">
-    <a href="#home" class="w3-button w3-light-grey"><i
-            class="fa fa-arrow-up w3-margin-right"></i>To the top</a>
-    <div class="w3-xlarge w3-section">
-        <a href="https://www.facebook.com/NHSF.UK" target="_blank"><i
-                class="fa fa-facebook-official w3-hover-opacity"></i></a>
-        <a href="https://www.instagram.com/nhsf_uk/" target="_blank"><i
-                class="fa fa-instagram w3-hover-opacity"></i></a>
-        <a href="https://twitter.com/nhsf_uk" target="_blank"><i
-                class="fa fa-twitter w3-hover-opacity"></i></a>
-        <a href="https://www.youtube.com/channel/UCp0OofXboDQoeBqXneh_kWA"
-           target="_blank"><i
-                class="fa fa-youtube-play w3-hover-opacity"></i></a>
-        <a href="https://www.linkedin.com/company/nhsf/" target="_blank"><i
-                class="fa fa-linkedin w3-hover-opacity"></i></a>
-    </div>
-</footer>
+<!--        <table class="w3-table-all w3-centered">-->
+<!--            -->
+<!--            <tr>-->
+<!--                <th>Team</th>-->
 
-<script>
-    // Modal Image Gallery
-    function onClick(element) {
-        document.getElementById("img01").src = element.src;
-        document.getElementById("modal01").style.display = "block";
-        let captionText = document.getElementById("caption");
-        captionText.innerHTML = element.alt;
-    }
+<!--                <th>Played</th>-->
+<!--                -->
+<!--                -->
+<!--                <th>Won</th>-->
+<!--                -->
+<!--                -->
+<!--                <th>Drawn</th>-->
+<!--                -->
+<!--                -->
+<!--                <th>Lost</th>-->
+<!--                -->
+<!--                -->
+<!--                <th>Goals For</th>-->
+<!--                -->
+<!--                -->
+<!--                <th>Goals Against</th>-->
+<!--                -->
+<!--                -->
+<!--                <th>Goal Difference</th>-->
+<!--                -->
+<!--                -->
+<!--                <th>Points</th>-->
+<!--                -->
+<!--                -->
+<!--            </tr>-->
+<!--            -->
+<!--             {% for value in table %}-->
+<!--            -->
+<!--            <tr>-->
+<!--                -->
+<!--                <td>{{ value.team }}</td>-->
+<!--                -->
+<!--                -->
+<!--                <td>{{ value.played }}</td>-->
+<!--                -->
+<!--                -->
+<!--                <td>{{ value.won }}</td>-->
+<!--                -->
+<!--                -->
+<!--                <td>{{ value.drawn }}</td>-->
+<!--                -->
+<!--                -->
+<!--                <td>{{ value.lost }}</td>-->
+<!--                -->
+<!--                -->
+<!--                <td>{{ value.goals_for }}</td>-->
+<!--                -->
+<!--                -->
+<!--                <td>{{ value.goals_against }}</td>-->
+<!--                -->
+<!--                -->
+<!--                <td>{{ value.goal_difference }}</td>-->
+<!--                -->
+<!--                -->
+<!--                <td>{{ value.points }}</td>-->
+<!--                -->
+<!--                -->
+<!--            </tr>-->
+<!--            -->
+<!--             {% endfor %}-->
+<!--            -->
+<!--        </table>-->
 
-    // Change style of navbar on scroll
-    window.onscroll = function () {
-        myFunction()
-    };
+<!--    </div>-->
 
-    function myFunction() {
-        let navbar = document.getElementById("myNavbar");
-        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-            navbar.className = "w3-bar" + " w3-card" + " w3-animate-top" + " w3-white";
-        } else {
-            navbar.className = navbar.className.replace(" w3-card w3-animate-top w3-white", "");
-        }
-    }
+<!--{% endfor %}-->
 
-    // Used to toggle the menu on small screens when clicking on the menu button
-    function toggleFunction() {
-        let x = document.getElementById("navDemo");
-        if (x.className.indexOf("w3-show") === -1) {
-            x.className += " w3-show";
-        } else {
-            x.className = x.className.replace(" w3-show", "");
-        }
-    }
+<!--</div>-->
 
-</script>
 
-</body>
-</html>
+{% endblock %}

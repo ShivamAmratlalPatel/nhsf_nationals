@@ -8,5 +8,5 @@ urlpatterns = [
     path('loaderio-6f638dd217ebc0c6ad2e477d8e9e2e8c/', views.loaderio,
          name='loaderio'),
     path('accounts/', include("django.contrib.auth.urls")),
-    path('score/', views.score, name='score'),
+    path('scorefootball/', views.score, name='score'),
 ]
