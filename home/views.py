@@ -4,11 +4,9 @@ from django.shortcuts import render
 import os
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.template import loader, Template
-from django.views.decorators.cache import cache_page
 
 from .commands import get_football_schedule, get_football_table, log_football_score, \
-    UnplayedGamesForm
-from .commands.football import get_unplayed_football_games
+    UnplayedGamesForm, get_unplayed_football_games
 
 
 # @cache_page(60 * 10)

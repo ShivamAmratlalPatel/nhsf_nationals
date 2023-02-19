@@ -3,7 +3,7 @@ import random
 from django import forms
 
 from ..models import FootballPitch, FootballSchedule, FootballTable, \
-    FootballTeam
+    FootballTeam, FootballKnockout
 from django.core.exceptions import BadRequest
 from django.db.models import Q
 
@@ -60,7 +60,7 @@ def generate_schedule() -> None:
             pitch = random.randint(1, pitches_count)
         time = random.randint(0, 23)
         FootballSchedule.objects.filter(schedule_id=fixture["schedule_id"]).update(
-            pitch_id_id=pitch,
+            pitch=pitch,
             time=f"{time}:00:00")
 
 
@@ -96,12 +96,12 @@ def get_football_schedule() -> dict:
 
     schedule = FootballSchedule.objects.select_related(
         "pitch").all().order_by(
-        "time").values("pitch_id__name", "team__name", "opponent__name",
+        "time").values("pitch__name", "team__name", "opponent__name",
                        "team_score", "opponent_score", "time", "played")
     pitches = FootballPitch.objects.all().values("name")
     output = {pitch["name"]: [] for pitch in pitches}
 
-    [output[game["pitch_id__name"]].append(
+    [output[game["pitch__name"]].append(
         {"game": f"{game['team__name']} vs {game['opponent__name']}",
          "time": game["time"].strftime("%H:%M"),
          "result": f"{game['team_score']} - {game['opponent_score']}",
@@ -221,10 +221,10 @@ def get_unplayed_football_games() -> list:
         "schedule_id",
         "team__name",
         "opponent__name",
-        "pitch_id__name")
+        "pitch__name")
 
     return [(game["schedule_id"],
-             f"{game['pitch_id__name']}: {game['team__name']} vs {game['opponent__name']}")
+             f"{game['pitch__name']}: {game['team__name']} vs {game['opponent__name']}")
             for
             game in games]
 
@@ -279,4 +279,29 @@ def generate_knockout_teams() -> None:
     :return: None
     """
 
-    raise NotImplementedError
+    if FootballKnockout.objects.exists():
+        return
+
+    if FootballTable.objects.filter(played=False).exists():
+        return
+
+    # Get top team from each group
+    top_teams = FootballTable.objects.all().order_by("-points_per_game",
+                                                     "-goal_difference",
+                                                     "-goals_for").values(
+        "team_id__name", "team_id__group")
+
+    # Get top 8 teams based on average points per game played
+    top_teams = top_teams[:8]
+
+    # Order teams based on average points per game played
+    top_teams = sorted(top_teams, key=lambda x: x["points_per_game"],
+                       reverse=True)
+
+    # Create knockout table
+    [FootballKnockout.objects.create(team_id=FootballTeam.objects.get(
+        name=team["team_id__name"]).team_id,
+                                     group=team["team_id__group"])
+     for team in top_teams]
+
+    return

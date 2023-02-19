@@ -101,7 +101,7 @@ class FootballTable(models.Model):
     goals_against = models.IntegerField()
     goal_difference = models.IntegerField()
     points = models.IntegerField()
-    points_per_game = models.DecimalField()
+    points_per_game = models.DecimalField(max_digits=7, decimal_places=4)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
@@ -119,7 +119,7 @@ class FootballKnockout(models.Model):
     team_penalty = models.IntegerField(null=True)
     opponent_penalty = models.IntegerField(null=True)
     time = models.TimeField()
-    pitch_id = models.ForeignKey(FootballPitch, on_delete=models.CASCADE)
+    pitch = models.ForeignKey(FootballPitch, on_delete=models.CASCADE)
     step = models.ForeignKey(KnockoutStep, on_delete=models.CASCADE)
     is_deleted = models.BooleanField(default=False)
 
@@ -128,7 +128,7 @@ class FootballKnockout(models.Model):
 
     @property
     def get_pitch(self):
-        return self.pitch_id.name
+        return self.pitch.name
 
     @property
     def get_time(self):
