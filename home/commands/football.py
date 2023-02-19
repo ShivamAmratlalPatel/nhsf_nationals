@@ -81,7 +81,8 @@ def initalise_football_table() -> None:
                                                    goals_for=0,
                                                    goals_against=0,
                                                    goal_difference=0,
-                                                   points=0)
+                                                   points=0,
+                                                   points_per_game=0)
 
 
 def get_football_schedule() -> dict:
@@ -94,7 +95,7 @@ def get_football_schedule() -> dict:
     initalise_football_table()
 
     schedule = FootballSchedule.objects.select_related(
-        "pitch_id").all().order_by(
+        "pitch").all().order_by(
         "time").values("pitch_id__name", "team__name", "opponent__name",
                        "team_score", "opponent_score", "time", "played")
     pitches = FootballPitch.objects.all().values("name")
@@ -206,7 +207,8 @@ def update_football_table(team_id: int) -> None:
                                                          goals_against,
                                                      "goal_difference":
                                                          goal_difference,
-                                                     "points": points})
+                                                     "points": points,
+                                                     "points_per_game": points / games_played})
 
     return
 
@@ -214,7 +216,7 @@ def update_football_table(team_id: int) -> None:
 def get_unplayed_football_games() -> list:
     """Return a list of unplayed football games with the format [(schedule_id, game)]"""
 
-    games = FootballSchedule.objects.filter(played=False).order_by("pitch_id",
+    games = FootballSchedule.objects.filter(played=False).order_by("pitch",
                                                                    "time").values(
         "schedule_id",
         "team__name",
