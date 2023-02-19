@@ -59,7 +59,8 @@ def generate_schedule() -> None:
         else:
             pitch = random.randint(1, pitches_count)
         time = random.randint(0, 23)
-        FootballSchedule.objects.filter(schedule_id=fixture["schedule_id"]).update(
+        FootballSchedule.objects.filter(
+            schedule_id=fixture["schedule_id"]).update(
             pitch=pitch,
             time=f"{time}:00:00")
 
@@ -263,7 +264,7 @@ def log_football_score(schedule_id: int, home_score: int,
     return
 
 
-def generate_knockout_teams() -> None:
+def generate_quarter_final() -> None:
     """
     Generate the knockout teams.
 
@@ -289,19 +290,121 @@ def generate_knockout_teams() -> None:
     top_teams = FootballTable.objects.all().order_by("-points_per_game",
                                                      "-goal_difference",
                                                      "-goals_for").values(
-        "team_id__name", "team_id__group")
+        "team_id", "team_id__group").distinct("team_id__group")
 
-    # Get top 8 teams based on average points per game played
-    top_teams = top_teams[:8]
+    # Get the top team from each group
+    knockout_teams = [team["team_id"] for team in top_teams]
 
-    # Order teams based on average points per game played
-    top_teams = sorted(top_teams, key=lambda x: x["points_per_game"],
-                       reverse=True)
+    # Get the next best teams from any league based on highest average
+    # points per game played until there are 8 teams
+    while len(knockout_teams) < 8:
+        next_best_team = FootballTable.objects.exclude(
+            team_id__in=knockout_teams).order_by("-points_per_game",
+                                                 "-goal_difference",
+                                                 "-goals_for").values(
+            "team_id").first()
+        knockout_teams.append(next_best_team["team_id"])
 
-    # Create knockout table
-    [FootballKnockout.objects.create(team_id=FootballTeam.objects.get(
-        name=team["team_id__name"]).team_id,
-                                     group=team["team_id__group"])
-     for team in top_teams]
+    # Order these teams based on average points per games
+    knockout_teams = FootballTable.objects.filter(
+        team_id__in=knockout_teams).order_by("-points_per_game",
+                                             "-goal_difference",
+                                             "-goals_for").values(
+        "team_id")
+
+    # Create the knockout table
+    # Quarter Final 1
+    FootballKnockout.objects.create(
+        team_1=knockout_teams[0]["team_id"],
+        team_2=knockout_teams[7]["team_id"],
+        played=False,
+        step_id=1, )
+    # Quarter Final 4
+    FootballKnockout.objects.create(
+        team_1=knockout_teams[1]["team_id"],
+        team_2=knockout_teams[6]["team_id"],
+        played=False,
+        step_id=4, )
+    # Quarter Final 3
+    FootballKnockout.objects.create(
+        team_1=knockout_teams[2]["team_id"],
+        team_2=knockout_teams[5]["team_id"],
+        played=False,
+        step_id=3, )
+    # Quarter Final 2
+    FootballKnockout.objects.create(
+        team_1=knockout_teams[3]["team_id"],
+        team_2=knockout_teams[4]["team_id"],
+        played=False,
+        step_id=2, )
+    return
+
+
+def generate_semi_final() -> None:
+    """
+    Generate the semi-final teams.
+
+    If QF1 and QF2 have not been played it should not generate SF1.
+
+    If QF3 and QF4 have not been played it should not generate SF3.
+    """
+
+    if FootballKnockout.objects.filter(step_id=1, played=False).exists():
+        return
+    elif FootballKnockout.objects.filter(step_id=2, played=False).exists():
+        return
+    else:
+        # Get the winners of QF1 and QF2
+        qf1: FootballKnockout = FootballKnockout.objects.get(step_id=1)
+        qf2: FootballKnockout = FootballKnockout.objects.get(step_id=2)
+
+        # Create SF1
+        FootballKnockout.objects.create(
+            team_id=qf1.winner,
+            opponent_id=qf2.winner,
+            played=False,
+            step_id=5, )
+
+    if FootballKnockout.objects.filter(step_id=3, played=False).exists():
+        return
+    elif FootballKnockout.objects.filter(step_id=4, played=False).exists():
+        return
+    else:
+        # Get the winners of QF3 and QF4
+        qf3: FootballKnockout = FootballKnockout.objects.get(step_id=3)
+        qf4: FootballKnockout = FootballKnockout.objects.get(step_id=4)
+
+        # Create SF2
+        FootballKnockout.objects.create(
+            team_id=qf3.winner,
+            opponent_id=qf4.winner,
+            played=False,
+            step_id=6, )
+
+    return
+
+
+def generate_final() -> None:
+    """
+    Generate the final teams.
+
+    If SF1 and SF2 have not been played it should not generate the final.
+    """
+
+    if FootballKnockout.objects.filter(step_id=5, played=False).exists():
+        return
+    elif FootballKnockout.objects.filter(step_id=6, played=False).exists():
+        return
+    else:
+        # Get the winners of SF1 and SF2
+        sf1: FootballKnockout = FootballKnockout.objects.get(step_id=5)
+        sf2: FootballKnockout = FootballKnockout.objects.get(step_id=6)
+
+        # Create the final
+        FootballKnockout.objects.create(
+            team_id=sf1.winner,
+            opponent_id=sf2.winner,
+            played=False,
+            step_id=7, )
 
     return
