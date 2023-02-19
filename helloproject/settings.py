@@ -107,7 +107,7 @@ TEMPLATES = [
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
-CSRF_TRUSTED_ORIGINS = ['sportscompetition.shivampatel.uk',
+CSRF_TRUSTED_ORIGINS = ['https://sportscompetition.shivampatel.uk',
                         'https://nhsf-uxn4znw4lq-ew.a.run.app']
 
 LOGIN_REDIRECT_URL = "/"
