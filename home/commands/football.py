@@ -261,3 +261,22 @@ def log_football_score(schedule_id: int, home_score: int,
         schedule_id=schedule_id).opponent_id)
 
     return
+
+
+def generate_knockout_teams() -> None:
+    """
+    Generate the knockout teams.
+
+    If the knockout table already exists it should not generate it.
+
+    If the group stages have not all finished it should not generate it.
+
+    It should pick the top team from each league and then pick the next best teams
+    from any league based on highest average points per game played until there are 8
+    teams. It should then order these teams based on average points per games and then
+    top team should play worst team and so on.
+
+    :return: None
+    """
+
+    raise NotImplementedError
