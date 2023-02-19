@@ -36,7 +36,6 @@
                 </tr>
                 {% endif %}
                 {% endfor %}
-
             </table>
         </div>
         <br>
@@ -48,80 +47,37 @@
     {% for group, table in group_stages.items %}
     <div>
         <h3 class="w3-center">Group {{ group }}</h3>
-
         <table class="w3-table-all w3-centered">
-
             <tr>
                 <th>Team</th>
-
                 <th>Played</th>
-
-
                 <th>Won</th>
-
-
                 <th>Drawn</th>
-
-
                 <th>Lost</th>
-
-
                 <th>Goals For</th>
-
-
                 <th>Goals Against</th>
-
-
                 <th>Goal Difference</th>
-
-
                 <th>Points</th>
-
-
             </tr>
-
             {% for value in table %}
-
             <tr>
-
                 <td>{{ value.team }}</td>
-
-
                 <td>{{ value.played }}</td>
-
-
                 <td>{{ value.won }}</td>
-
-
                 <td>{{ value.drawn }}</td>
-
-
                 <td>{{ value.lost }}</td>
-
-
                 <td>{{ value.goals_for }}</td>
-
-
                 <td>{{ value.goals_against }}</td>
-
-
                 <td>{{ value.goal_difference }}</td>
-
-
                 <td>{{ value.points }}</td>
-
-
             </tr>
-
             {% endfor %}
-
         </table>
-
     </div>
-
     {% endfor %}
-
 </div>
+<h2 class="w3-center">Knockout Stages</h2>
+
 
 
 {% endblock %}
