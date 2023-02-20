@@ -468,91 +468,49 @@ def get_knockout_stages() -> dict:
         knockout_stages["Quarter Final 1"] = {
             "team": FootballKnockout.objects.get(step_id=1).team.name,
             "opponent": FootballKnockout.objects.get(step_id=1).opponent.name,
-            "team_score": FootballKnockout.objects.get(step_id=1).team_score,
-            "opponent_score": FootballKnockout.objects.get(
-                step_id=1).opponent_score,
-            "team_penalty": FootballKnockout.objects.get(
-                step_id=1).team_penalty,
-            "opponent_penalty": FootballKnockout.objects.get(
-                step_id=1).opponent_penalty,
+            "result": FootballKnockout.objects.get(step_id=1).get_result,
             "played": FootballKnockout.objects.get(step_id=1).played,
         }
     if FootballKnockout.objects.filter(step_id=2).exists():
         knockout_stages["Quarter Final 2"] = {
             "team": FootballKnockout.objects.get(step_id=2).team.name,
             "opponent": FootballKnockout.objects.get(step_id=2).opponent.name,
-            "team_score": FootballKnockout.objects.get(step_id=2).team_score,
-            "opponent_score": FootballKnockout.objects.get(
-                step_id=2).opponent_score,
-            "team_penalty": FootballKnockout.objects.get(
-                step_id=2).team_penalty,
-            "opponent_penalty": FootballKnockout.objects.get(
-                step_id=2).opponent_penalty,
+            "result": FootballKnockout.objects.get(step_id=2).get_result,
             "played": FootballKnockout.objects.get(step_id=2).played,
         }
     if FootballKnockout.objects.filter(step_id=3).exists():
         knockout_stages["Quarter Final 3"] = {
             "team": FootballKnockout.objects.get(step_id=3).team.name,
             "opponent": FootballKnockout.objects.get(step_id=3).opponent.name,
-            "team_score": FootballKnockout.objects.get(step_id=3).team_score,
-            "opponent_score": FootballKnockout.objects.get(
-                step_id=3).opponent_score,
-            "team_penalty": FootballKnockout.objects.get(
-                step_id=3).team_penalty,
-            "opponent_penalty": FootballKnockout.objects.get(
-                step_id=3).opponent_penalty,
+            "result": FootballKnockout.objects.get(step_id=3).get_result,
             "played": FootballKnockout.objects.get(step_id=3).played,
         }
     if FootballKnockout.objects.filter(step_id=4).exists():
         knockout_stages["Quarter Final 4"] = {
             "team": FootballKnockout.objects.get(step_id=4).team.name,
             "opponent": FootballKnockout.objects.get(step_id=4).opponent.name,
-            "team_score": FootballKnockout.objects.get(step_id=4).team_score,
-            "opponent_score": FootballKnockout.objects.get(
-                step_id=4).opponent_score,
-            "team_penalty": FootballKnockout.objects.get(
-                step_id=4).team_penalty,
-            "opponent_penalty": FootballKnockout.objects.get(
-                step_id=4).opponent_penalty,
+            "result": FootballKnockout.objects.get(step_id=4).get_result,
             "played": FootballKnockout.objects.get(step_id=4).played,
         }
     if FootballKnockout.objects.filter(step_id=5).exists():
         knockout_stages["Semi Final 1"] = {
             "team": FootballKnockout.objects.get(step_id=5).team.name,
             "opponent": FootballKnockout.objects.get(step_id=5).opponent.name,
-            "team_score": FootballKnockout.objects.get(step_id=5).team_score,
-            "opponent_score": FootballKnockout.objects.get(
-                step_id=5).opponent_score,
-            "team_penalty": FootballKnockout.objects.get(
-                step_id=5).team_penalty,
-            "opponent_penalty": FootballKnockout.objects.get(
-                step_id=5).opponent_penalty,
+            "result": FootballKnockout.objects.get(step_id=5).get_result,
             "played": FootballKnockout.objects.get(step_id=5).played,
         }
     if FootballKnockout.objects.filter(step_id=6).exists():
         knockout_stages["Semi Final 2"] = {
             "team": FootballKnockout.objects.get(step_id=6).team.name,
             "opponent": FootballKnockout.objects.get(step_id=6).opponent.name,
-            "team_score": FootballKnockout.objects.get(step_id=6).team_score,
-            "opponent_score": FootballKnockout.objects.get(
-                step_id=6).opponent_score,
-            "team_penalty": FootballKnockout.objects.get(
-                step_id=6).team_penalty,
-            "opponent_penalty": FootballKnockout.objects.get(
-                step_id=6).opponent_penalty,
+            "result": FootballKnockout.objects.get(step_id=6).get_result,
             "played": FootballKnockout.objects.get(step_id=6).played,
         }
     if FootballKnockout.objects.filter(step_id=7).exists():
         knockout_stages["Final"] = {
             "team": FootballKnockout.objects.get(step_id=7).team.name,
             "opponent": FootballKnockout.objects.get(step_id=7).opponent.name,
-            "team_score": FootballKnockout.objects.get(step_id=7).team_score,
-            "opponent_score": FootballKnockout.objects.get(
-                step_id=7).opponent_score,
-            "team_penalty": FootballKnockout.objects.get(
-                step_id=7).team_penalty,
-            "opponent_penalty": FootballKnockout.objects.get(
-                step_id=7).opponent_penalty,
+            "result": FootballKnockout.objects.get(step_id=7).get_result,
             "played": FootballKnockout.objects.get(step_id=7).played,
         }
     return knockout_stages
