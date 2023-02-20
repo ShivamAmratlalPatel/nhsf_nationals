@@ -119,7 +119,7 @@ class FootballKnockout(models.Model):
     played = models.BooleanField(default=False)
     team_penalty = models.IntegerField(null=True)
     opponent_penalty = models.IntegerField(null=True)
-    time = models.TimeField()
+    time = models.TimeField(null=True)
     pitch = models.ForeignKey(FootballPitch, on_delete=models.CASCADE)
     step = models.ForeignKey(KnockoutStep, on_delete=models.CASCADE)
     is_deleted = models.BooleanField(default=False)

@@ -5,7 +5,6 @@
 {% block content %}
 
 
-
 <div class="w3-content w3-container w3-padding-64">
     <div style="display: flex; justify-content: center">
         <span class=" w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">Football</span>
@@ -24,7 +23,7 @@
     <div class="w3-container w3-card w3-white w3-round w3-margin">
         <br>
         <hr class="w3-clear">
-        <form action="/score/" method="post">
+        <form action="/scorefootball/" method="post">
             {% csrf_token %}
             {% for field in form %}
             <p>{{ field.label_tag }} {{ field }}</p>

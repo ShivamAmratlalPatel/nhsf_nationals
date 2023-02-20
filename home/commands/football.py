@@ -209,7 +209,7 @@ def update_football_table(team_id: int) -> None:
                                                      "goal_difference":
                                                          goal_difference,
                                                      "points": points,
-                                                     "points_per_game": points / games_played})
+                                                     "points_per_game": points / games_played if games_played else 0})
 
     return
 
@@ -217,17 +217,32 @@ def update_football_table(team_id: int) -> None:
 def get_unplayed_football_games() -> list:
     """Return a list of unplayed football games with the format [(schedule_id, game)]"""
 
-    games = FootballSchedule.objects.filter(played=False).order_by("pitch",
-                                                                   "time").values(
+    games = FootballSchedule.objects.filter(played=False).order_by(
+        "pitch_id__name",
+        "time").values(
         "schedule_id",
         "team__name",
         "opponent__name",
-        "pitch__name")
+        "pitch_id__name")
 
-    return [(game["schedule_id"],
-             f"{game['pitch__name']}: {game['team__name']} vs {game['opponent__name']}")
-            for
-            game in games]
+    output = [(game["schedule_id"],
+               f"{game['pitch_id__name']}: {game['team__name']} vs {game['opponent__name']}")
+              for
+              game in games]
+
+    knockout_games = FootballKnockout.objects.filter(played=False).order_by(
+        "step_id").values(
+        "id",
+        "team__name",
+        "opponent__name",
+        "step__name")
+
+    [output.append((game["id"],
+                    f"{game['step__name']}: {game['team__name']} vs {game['opponent__name']}"))
+     for
+     game in knockout_games]
+
+    return output
 
 
 class UnplayedGamesForm(forms.Form):
@@ -236,32 +251,10 @@ class UnplayedGamesForm(forms.Form):
     game = forms.ChoiceField(label="Game", choices=choices)
     team_1_score = forms.IntegerField(label="Team 1 Goals")
     team_2_score = forms.IntegerField(label="Team 2 Goals")
-
-
-def log_football_score(schedule_id: int, home_score: int,
-                       away_score: int) -> None:
-    """Log a football score"""
-
-    if not schedule_id:
-        raise BadRequest("Schedule ID is required")
-
-    if not home_score:
-        raise BadRequest("Home score is required")
-
-    if not away_score:
-        raise BadRequest("Away score is required")
-
-    FootballSchedule.objects.filter(schedule_id=schedule_id).update(
-        team_score=home_score,
-        opponent_score=away_score,
-        played=True)
-
-    update_football_table(FootballSchedule.objects.get(
-        schedule_id=schedule_id).team_id)
-    update_football_table(FootballSchedule.objects.get(
-        schedule_id=schedule_id).opponent_id)
-
-    return
+    team_1_penalty = forms.IntegerField(label="Team 1 Penalties",
+                                        required=False)
+    team_2_penalty = forms.IntegerField(label="Team 2 Penalties",
+                                        required=False)
 
 
 def generate_quarter_final() -> None:
@@ -283,17 +276,20 @@ def generate_quarter_final() -> None:
     if FootballKnockout.objects.exists():
         return
 
-    if FootballTable.objects.filter(played=False).exists():
+    if FootballSchedule.objects.filter(played=False).exists():
         return
 
     # Get top team from each group
     top_teams = FootballTable.objects.all().order_by("-points_per_game",
                                                      "-goal_difference",
                                                      "-goals_for").values(
-        "team_id", "team_id__group").distinct("team_id__group")
+        "team_id", "team_id__group")
 
+    knockout_teams = []
     # Get the top team from each group
-    knockout_teams = [team["team_id"] for team in top_teams]
+    for group in range(1, 6):
+        top_team = top_teams.filter(team_id__group=group).first()
+        knockout_teams.append(top_team["team_id"])
 
     # Get the next best teams from any league based on highest average
     # points per game played until there are 8 teams
@@ -315,28 +311,28 @@ def generate_quarter_final() -> None:
     # Create the knockout table
     # Quarter Final 1
     FootballKnockout.objects.create(
-        team_1=knockout_teams[0]["team_id"],
-        team_2=knockout_teams[7]["team_id"],
+        team_id=knockout_teams[0]["team_id"],
+        opponent_id=knockout_teams[7]["team_id"],
         played=False,
-        step_id=1, )
+        step_id=1, pitch_id=1)
     # Quarter Final 4
     FootballKnockout.objects.create(
-        team_1=knockout_teams[1]["team_id"],
-        team_2=knockout_teams[6]["team_id"],
+        team_id=knockout_teams[1]["team_id"],
+        opponent_id=knockout_teams[6]["team_id"],
         played=False,
-        step_id=4, )
+        step_id=4, pitch_id=2)
     # Quarter Final 3
     FootballKnockout.objects.create(
-        team_1=knockout_teams[2]["team_id"],
-        team_2=knockout_teams[5]["team_id"],
+        team_id=knockout_teams[2]["team_id"],
+        opponent_id=knockout_teams[5]["team_id"],
         played=False,
-        step_id=3, )
+        step_id=3, pitch_id=3)
     # Quarter Final 2
     FootballKnockout.objects.create(
-        team_1=knockout_teams[3]["team_id"],
-        team_2=knockout_teams[4]["team_id"],
+        team_id=knockout_teams[3]["team_id"],
+        opponent_id=knockout_teams[4]["team_id"],
         played=False,
-        step_id=2, )
+        step_id=2, pitch_id=1)
     return
 
 
@@ -349,39 +345,42 @@ def generate_semi_final() -> None:
     If QF3 and QF4 have not been played it should not generate SF3.
     """
 
-    if FootballKnockout.objects.filter(step_id=1, played=False).exists():
-        return
-    elif FootballKnockout.objects.filter(step_id=2, played=False).exists():
-        return
-    else:
-        # Get the winners of QF1 and QF2
-        qf1: FootballKnockout = FootballKnockout.objects.get(step_id=1)
-        qf2: FootballKnockout = FootballKnockout.objects.get(step_id=2)
+    if FootballKnockout.objects.exists():
+        if FootballKnockout.objects.filter(step_id=1, played=False).exists():
+            return
+        elif FootballKnockout.objects.filter(step_id=2, played=False).exists():
+            return
+        else:
+            if not FootballKnockout.objects.filter(step_id=5).exists():
+                # Get the winners of QF1 and QF2
+                qf1 = FootballKnockout.objects.get(step_id=1)
+                qf2 = FootballKnockout.objects.get(step_id=2)
 
-        # Create SF1
-        FootballKnockout.objects.create(
-            team_id=qf1.winner,
-            opponent_id=qf2.winner,
-            played=False,
-            step_id=5, )
+                # Create SF1
+                FootballKnockout.objects.create(
+                    team_id=qf1.winner,
+                    opponent_id=qf2.winner,
+                    played=False,
+                    step_id=5, pitch_id=2)
 
-    if FootballKnockout.objects.filter(step_id=3, played=False).exists():
+        if FootballKnockout.objects.filter(step_id=3, played=False).exists():
+            return
+        elif FootballKnockout.objects.filter(step_id=4, played=False).exists():
+            return
+        else:
+            if not FootballKnockout.objects.filter(step_id=6).exists():
+                # Get the winners of QF3 and QF4
+                qf3: FootballKnockout = FootballKnockout.objects.get(step_id=3)
+                qf4: FootballKnockout = FootballKnockout.objects.get(step_id=4)
+
+                # Create SF2
+                FootballKnockout.objects.create(
+                    team_id=qf3.winner,
+                    opponent_id=qf4.winner,
+                    played=False,
+                    step_id=6, pitch_id=2)
+
         return
-    elif FootballKnockout.objects.filter(step_id=4, played=False).exists():
-        return
-    else:
-        # Get the winners of QF3 and QF4
-        qf3: FootballKnockout = FootballKnockout.objects.get(step_id=3)
-        qf4: FootballKnockout = FootballKnockout.objects.get(step_id=4)
-
-        # Create SF2
-        FootballKnockout.objects.create(
-            team_id=qf3.winner,
-            opponent_id=qf4.winner,
-            played=False,
-            step_id=6, )
-
-    return
 
 
 def generate_final() -> None:
@@ -391,20 +390,169 @@ def generate_final() -> None:
     If SF1 and SF2 have not been played it should not generate the final.
     """
 
-    if FootballKnockout.objects.filter(step_id=5, played=False).exists():
+    if FootballKnockout.objects.filter(
+            step_id=5).exists() or FootballKnockout.objects.filter(
+        step_id=6).exists():
+        if FootballKnockout.objects.filter(step_id=5, played=False).exists():
+            return
+        elif FootballKnockout.objects.filter(step_id=6, played=False).exists():
+            return
+        else:
+            if not FootballKnockout.objects.filter(step_id=7).exists():
+                # Get the winners of SF1 and SF2
+                sf1: FootballKnockout = FootballKnockout.objects.get(step_id=5)
+                sf2: FootballKnockout = FootballKnockout.objects.get(step_id=6)
+
+                # Create the final
+                FootballKnockout.objects.create(
+                    team_id=sf1.winner,
+                    opponent_id=sf2.winner,
+                    played=False,
+                    step_id=7, pitch_id=3)
+
         return
-    elif FootballKnockout.objects.filter(step_id=6, played=False).exists():
+
+
+def log_football_score(schedule_id: int, home_score: int,
+                       away_score: int, home_penalties: int,
+                       away_penalties: int) -> None:
+    """Log a football score"""
+
+    if not schedule_id:
+        raise BadRequest("Schedule ID is required")
+
+    if not home_score:
+        raise BadRequest("Home score is required")
+
+    if not away_score:
+        raise BadRequest("Away score is required")
+
+    if FootballSchedule.objects.filter(played=False).exists():
+
+        FootballSchedule.objects.filter(schedule_id=schedule_id).update(
+            team_score=home_score,
+            opponent_score=away_score,
+            played=True)
+
+        update_football_table(FootballSchedule.objects.get(
+            schedule_id=schedule_id).team_id)
+        update_football_table(FootballSchedule.objects.get(
+            schedule_id=schedule_id).opponent_id)
+
+        generate_quarter_final()
         return
     else:
-        # Get the winners of SF1 and SF2
-        sf1: FootballKnockout = FootballKnockout.objects.get(step_id=5)
-        sf2: FootballKnockout = FootballKnockout.objects.get(step_id=6)
+        FootballKnockout.objects.filter(id=schedule_id).update(
+            team_score=home_score,
+            opponent_score=away_score,
+            team_penalty=home_penalties,
+            opponent_penalty=away_penalties,
+            played=True)
 
-        # Create the final
-        FootballKnockout.objects.create(
-            team_id=sf1.winner,
-            opponent_id=sf2.winner,
-            played=False,
-            step_id=7, )
+        generate_semi_final()
+        generate_final()
 
     return
+
+
+def get_knockout_stages() -> dict:
+    """
+    Get the knockout stages.
+
+
+    :return: dict
+    """
+
+    knockout_stages = {}
+    if FootballKnockout.objects.filter(step_id=1).exists():
+        knockout_stages["Quarter Final 1"] = {
+            "team": FootballKnockout.objects.get(step_id=1).team.name,
+            "opponent": FootballKnockout.objects.get(step_id=1).opponent.name,
+            "team_score": FootballKnockout.objects.get(step_id=1).team_score,
+            "opponent_score": FootballKnockout.objects.get(
+                step_id=1).opponent_score,
+            "team_penalty": FootballKnockout.objects.get(
+                step_id=1).team_penalty,
+            "opponent_penalty": FootballKnockout.objects.get(
+                step_id=1).opponent_penalty,
+            "played": FootballKnockout.objects.get(step_id=1).played,
+        }
+    if FootballKnockout.objects.filter(step_id=2).exists():
+        knockout_stages["Quarter Final 2"] = {
+            "team": FootballKnockout.objects.get(step_id=2).team.name,
+            "opponent": FootballKnockout.objects.get(step_id=2).opponent.name,
+            "team_score": FootballKnockout.objects.get(step_id=2).team_score,
+            "opponent_score": FootballKnockout.objects.get(
+                step_id=2).opponent_score,
+            "team_penalty": FootballKnockout.objects.get(
+                step_id=2).team_penalty,
+            "opponent_penalty": FootballKnockout.objects.get(
+                step_id=2).opponent_penalty,
+            "played": FootballKnockout.objects.get(step_id=2).played,
+        }
+    if FootballKnockout.objects.filter(step_id=3).exists():
+        knockout_stages["Quarter Final 3"] = {
+            "team": FootballKnockout.objects.get(step_id=3).team.name,
+            "opponent": FootballKnockout.objects.get(step_id=3).opponent.name,
+            "team_score": FootballKnockout.objects.get(step_id=3).team_score,
+            "opponent_score": FootballKnockout.objects.get(
+                step_id=3).opponent_score,
+            "team_penalty": FootballKnockout.objects.get(
+                step_id=3).team_penalty,
+            "opponent_penalty": FootballKnockout.objects.get(
+                step_id=3).opponent_penalty,
+            "played": FootballKnockout.objects.get(step_id=3).played,
+        }
+    if FootballKnockout.objects.filter(step_id=4).exists():
+        knockout_stages["Quarter Final 4"] = {
+            "team": FootballKnockout.objects.get(step_id=4).team.name,
+            "opponent": FootballKnockout.objects.get(step_id=4).opponent.name,
+            "team_score": FootballKnockout.objects.get(step_id=4).team_score,
+            "opponent_score": FootballKnockout.objects.get(
+                step_id=4).opponent_score,
+            "team_penalty": FootballKnockout.objects.get(
+                step_id=4).team_penalty,
+            "opponent_penalty": FootballKnockout.objects.get(
+                step_id=4).opponent_penalty,
+            "played": FootballKnockout.objects.get(step_id=4).played,
+        }
+    if FootballKnockout.objects.filter(step_id=5).exists():
+        knockout_stages["Semi Final 1"] = {
+            "team": FootballKnockout.objects.get(step_id=5).team.name,
+            "opponent": FootballKnockout.objects.get(step_id=5).opponent.name,
+            "team_score": FootballKnockout.objects.get(step_id=5).team_score,
+            "opponent_score": FootballKnockout.objects.get(
+                step_id=5).opponent_score,
+            "team_penalty": FootballKnockout.objects.get(
+                step_id=5).team_penalty,
+            "opponent_penalty": FootballKnockout.objects.get(
+                step_id=5).opponent_penalty,
+            "played": FootballKnockout.objects.get(step_id=5).played,
+        }
+    if FootballKnockout.objects.filter(step_id=6).exists():
+        knockout_stages["Semi Final 2"] = {
+            "team": FootballKnockout.objects.get(step_id=6).team.name,
+            "opponent": FootballKnockout.objects.get(step_id=6).opponent.name,
+            "team_score": FootballKnockout.objects.get(step_id=6).team_score,
+            "opponent_score": FootballKnockout.objects.get(
+                step_id=6).opponent_score,
+            "team_penalty": FootballKnockout.objects.get(
+                step_id=6).team_penalty,
+            "opponent_penalty": FootballKnockout.objects.get(
+                step_id=6).opponent_penalty,
+            "played": FootballKnockout.objects.get(step_id=6).played,
+        }
+    if FootballKnockout.objects.filter(step_id=7).exists():
+        knockout_stages["Final"] = {
+            "team": FootballKnockout.objects.get(step_id=7).team.name,
+            "opponent": FootballKnockout.objects.get(step_id=7).opponent.name,
+            "team_score": FootballKnockout.objects.get(step_id=7).team_score,
+            "opponent_score": FootballKnockout.objects.get(
+                step_id=7).opponent_score,
+            "team_penalty": FootballKnockout.objects.get(
+                step_id=7).team_penalty,
+            "opponent_penalty": FootballKnockout.objects.get(
+                step_id=7).opponent_penalty,
+            "played": FootballKnockout.objects.get(step_id=7).played,
+        }
+    return knockout_stages

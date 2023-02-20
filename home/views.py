@@ -5,8 +5,9 @@ import os
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.template import loader, Template
 
-from .commands import get_football_schedule, get_football_table, log_football_score, \
-    UnplayedGamesForm, get_unplayed_football_games
+from .commands import get_football_schedule, get_football_table, \
+    log_football_score, \
+    UnplayedGamesForm, get_unplayed_football_games, get_knockout_stages
 
 
 # @cache_page(60 * 10)
@@ -28,7 +29,7 @@ def football(request: HttpRequest) -> HttpResponse:
         "schedules": get_football_schedule(),
         "group_stages": get_football_table(),
         "authenticated": request.user.is_authenticated,
-
+        "knockout_stages": get_knockout_stages(),
     }
     return HttpResponse(template.render(context))
 
@@ -47,8 +48,19 @@ def logfootballscore(request: HttpRequest) -> HttpResponse:
             game_id = int(str(request.POST["game"]))
             home_score = int(str(request.POST["team_1_score"]))
             away_score = int(str(request.POST["team_2_score"]))
-            log_football_score(game_id, home_score, away_score)
-            return HttpResponse("Success")
+            try:
+                home_penalty_score = int(str(request.POST["team_1_penalty"]))
+                away_penalty_score = int(str(request.POST["team_2_penalty"]))
+            except Exception:
+                print(Exception)
+                home_penalty_score = None
+                away_penalty_score = None
+            finally:
+                print(game_id, home_score, away_score, home_penalty_score,
+                      away_penalty_score)
+                log_football_score(game_id, home_score, away_score,
+                                   home_penalty_score, away_penalty_score)
+                return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
         except ValueError:
@@ -64,7 +76,6 @@ def score(request: HttpRequest) -> HttpResponse:
     if request.user.is_authenticated:
         if request.method == "POST":
             logfootballscore(request)
-
             # Initialise the form again
             form = UnplayedGamesForm()
             form.fields["game"].choices = get_unplayed_football_games()
@@ -75,6 +86,7 @@ def score(request: HttpRequest) -> HttpResponse:
             }, request=request))
         else:
             form = UnplayedGamesForm()
+            form.fields["game"].choices = get_unplayed_football_games()
             template: Template = loader.get_template("football_score.html")
             return HttpResponse(template.render(context={
                 "form": form, "success": False,

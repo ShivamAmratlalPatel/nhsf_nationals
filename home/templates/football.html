@@ -21,16 +21,19 @@
                 {% if row1.played %}
                 <tr style="background-color: lightgreen;">
                     <td>
-                        <p style="margin : 0; padding-top:0;">{{ row1.game }}</p>
+                        <p style="margin : 0; padding-top:0;">{{ row1.game
+                            }}</p>
                         <!--                         <p style="margin : 0; padding-top:0;">{{ row1.time }}</p>-->
-                        <p style="margin : 0; padding-top:0;">{{ row1.result }}</p>
+                        <p style="margin : 0; padding-top:0;">{{ row1.result
+                            }}</p>
                     </td>
                 </tr>
                 {% endif %}
                 {% if not row1.played %}
                 <tr style="background-color:#f1f1f1">
                     <td>
-                        <p style="margin : 0; padding-top:0;">{{ row1.game }}</p>
+                        <p style="margin : 0; padding-top:0;">{{ row1.game
+                            }}</p>
                         <!--                         <p style="margin : 0; padding-top:0;">{{ row1.time }}</p>-->
                     </td>
                 </tr>
@@ -77,7 +80,25 @@
     {% endfor %}
 </div>
 <h2 class="w3-center">Knockout Stages</h2>
-
-
+<div>
+    {% for round, value in knockout_stages.items %}
+    <div>
+        <h3 class="w3-center">{{ round }}</h3>
+        <table class="w3-table-all w3-centered">
+            <tr>
+                <th>Home</th>
+                <th>Away</th>
+                <th>Result</th>
+            </tr>
+            {% for row in value %}
+            <tr>
+                <td>{{ row.home }}</td>
+                <td>{{ row.away }}</td>
+                <td>{{ row.result }}</td>
+            </tr>
+            {% endfor %}
+    </div>
+    {% endfor %}
+</div>
 
 {% endblock %}

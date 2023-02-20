@@ -1,3 +1,4 @@
+import debug_toolbar
 from django.urls import path, include
 
 from . import views
@@ -9,4 +10,6 @@ urlpatterns = [
          name='loaderio'),
     path('accounts/', include("django.contrib.auth.urls")),
     path('scorefootball/', views.score, name='scorefootball'),
+    path('__debug__/', include(debug_toolbar.urls)),
+
 ]
