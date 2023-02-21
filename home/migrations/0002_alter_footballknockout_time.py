@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('home', '0001_initial'),
+        ("home", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='footballknockout',
-            name='time',
+            model_name="footballknockout",
+            name="time",
             field=models.TimeField(null=True),
         ),
     ]

@@ -5,126 +5,183 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Chapter',
+            name="Chapter",
             fields=[
-                ('chapter_id',
-                 models.AutoField(db_index=True, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=200)),
-                ('is_deleted', models.BooleanField(default=False)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='FootballPitch',
-            fields=[
-                ('pitch_id',
-                 models.AutoField(db_index=True, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=200)),
-                ('is_deleted', models.BooleanField(default=False)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='KnockoutStep',
-            fields=[
-                ('id',
-                 models.AutoField(db_index=True, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=100)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Sport',
-            fields=[
-                ('sport_id',
-                 models.AutoField(db_index=True, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=200)),
-                ('is_deleted', models.BooleanField(default=False)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='FootballTeam',
-            fields=[
-                ('team_id',
-                 models.AutoField(db_index=True, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=200)),
-                ('group', models.IntegerField()),
-                ('is_deleted', models.BooleanField(default=False)),
-                ('chapter',
-                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                   to='home.chapter')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='FootballTable',
-            fields=[
-                ('id',
-                 models.AutoField(db_index=True, primary_key=True, serialize=False)),
-                ('played', models.IntegerField()),
-                ('won', models.IntegerField()),
-                ('drawn', models.IntegerField()),
-                ('lost', models.IntegerField()),
-                ('goals_for', models.IntegerField()),
-                ('goals_against', models.IntegerField()),
-                ('goal_difference', models.IntegerField()),
-                ('points', models.IntegerField()),
                 (
-                    'points_per_game',
-                    models.DecimalField(decimal_places=4, max_digits=7)),
-                ('is_deleted', models.BooleanField(default=False)),
-                ('team_id',
-                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                   to='home.footballteam')),
+                    "chapter_id",
+                    models.AutoField(db_index=True, primary_key=True, serialize=False),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("is_deleted", models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
-            name='FootballSchedule',
+            name="FootballPitch",
             fields=[
-                ('schedule_id',
-                 models.AutoField(db_index=True, primary_key=True, serialize=False)),
-                ('team_score', models.IntegerField(null=True)),
-                ('opponent_score', models.IntegerField(null=True)),
-                ('played', models.BooleanField(default=False)),
-                ('time', models.TimeField(null=True)),
-                ('is_deleted', models.BooleanField(default=False)),
-                ('opponent', models.ForeignKey(null=True,
-                                               on_delete=django.db.models.deletion.CASCADE,
-                                               related_name='opponent',
-                                               to='home.footballteam')),
-                ('pitch', models.ForeignKey(null=True,
-                                            on_delete=django.db.models.deletion.CASCADE,
-                                            to='home.footballpitch')),
-                ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                           related_name='team',
-                                           to='home.footballteam')),
+                (
+                    "pitch_id",
+                    models.AutoField(db_index=True, primary_key=True, serialize=False),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("is_deleted", models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
-            name='FootballKnockout',
+            name="KnockoutStep",
             fields=[
-                ('id',
-                 models.AutoField(db_index=True, primary_key=True, serialize=False)),
-                ('team_score', models.IntegerField(null=True)),
-                ('opponent_score', models.IntegerField(null=True)),
-                ('played', models.BooleanField(default=False)),
-                ('team_penalty', models.IntegerField(null=True)),
-                ('opponent_penalty', models.IntegerField(null=True)),
-                ('time', models.TimeField()),
-                ('is_deleted', models.BooleanField(default=False)),
-                ('opponent',
-                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                   related_name='opponent_id', to='home.footballteam')),
-                ('pitch', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                            to='home.footballpitch')),
-                ('step', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                           to='home.knockoutstep')),
-                ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                           to='home.footballteam')),
+                (
+                    "id",
+                    models.AutoField(db_index=True, primary_key=True, serialize=False),
+                ),
+                ("name", models.CharField(max_length=100)),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Sport",
+            fields=[
+                (
+                    "sport_id",
+                    models.AutoField(db_index=True, primary_key=True, serialize=False),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("is_deleted", models.BooleanField(default=False)),
+            ],
+        ),
+        migrations.CreateModel(
+            name="FootballTeam",
+            fields=[
+                (
+                    "team_id",
+                    models.AutoField(db_index=True, primary_key=True, serialize=False),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("group", models.IntegerField()),
+                ("is_deleted", models.BooleanField(default=False)),
+                (
+                    "chapter",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="home.chapter"
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="FootballTable",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(db_index=True, primary_key=True, serialize=False),
+                ),
+                ("played", models.IntegerField()),
+                ("won", models.IntegerField()),
+                ("drawn", models.IntegerField()),
+                ("lost", models.IntegerField()),
+                ("goals_for", models.IntegerField()),
+                ("goals_against", models.IntegerField()),
+                ("goal_difference", models.IntegerField()),
+                ("points", models.IntegerField()),
+                (
+                    "points_per_game",
+                    models.DecimalField(decimal_places=4, max_digits=7),
+                ),
+                ("is_deleted", models.BooleanField(default=False)),
+                (
+                    "team_id",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="home.footballteam",
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="FootballSchedule",
+            fields=[
+                (
+                    "schedule_id",
+                    models.AutoField(db_index=True, primary_key=True, serialize=False),
+                ),
+                ("team_score", models.IntegerField(null=True)),
+                ("opponent_score", models.IntegerField(null=True)),
+                ("played", models.BooleanField(default=False)),
+                ("time", models.TimeField(null=True)),
+                ("is_deleted", models.BooleanField(default=False)),
+                (
+                    "opponent",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="opponent",
+                        to="home.footballteam",
+                    ),
+                ),
+                (
+                    "pitch",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="home.footballpitch",
+                    ),
+                ),
+                (
+                    "team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="team",
+                        to="home.footballteam",
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="FootballKnockout",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(db_index=True, primary_key=True, serialize=False),
+                ),
+                ("team_score", models.IntegerField(null=True)),
+                ("opponent_score", models.IntegerField(null=True)),
+                ("played", models.BooleanField(default=False)),
+                ("team_penalty", models.IntegerField(null=True)),
+                ("opponent_penalty", models.IntegerField(null=True)),
+                ("time", models.TimeField()),
+                ("is_deleted", models.BooleanField(default=False)),
+                (
+                    "opponent",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="opponent_id",
+                        to="home.footballteam",
+                    ),
+                ),
+                (
+                    "pitch",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="home.footballpitch",
+                    ),
+                ),
+                (
+                    "step",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="home.knockoutstep",
+                    ),
+                ),
+                (
+                    "team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="home.footballteam",
+                    ),
+                ),
             ],
         ),
     ]

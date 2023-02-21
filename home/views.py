@@ -2,33 +2,67 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 import os
-from django.http import HttpResponse, HttpRequest, HttpResponseServerError
+from django.http import (
+    HttpResponse,
+    HttpRequest,
+    HttpResponseServerError,
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+)
 from django.template import loader, Template
 
-from .commands import get_football_schedule, get_football_table, \
-    log_football_score, \
-    UnplayedFootballGamesForm, get_unplayed_football_games, get_football_knockout_stages, \
-    get_netball_schedule, get_netball_table, log_netball_score, \
-    UnplayedNetballGamesForm, get_unplayed_netball_games, get_netball_knockout_stages, \
-    get_kho_schedule, get_kho_table, log_kho_score, UnplayedKhoGamesForm, \
-    get_unplayed_kho_games, get_kho_knockout_stages, \
-    get_kabaddi_schedule, get_kabaddi_table, log_kabaddi_score, \
-    UnplayedKabaddiGamesForm, get_unplayed_kabaddi_games, get_kabaddi_knockout_stages, \
-    get_cricket_schedule, get_cricket_table, log_cricket_score, \
-    UnplayedCricketGamesForm, get_unplayed_cricket_games, get_cricket_knockout_stages, \
-    get_badminton_schedule, get_badminton_table, log_badminton_score, \
-    UnplayedBadmintonGamesForm, get_unplayed_badminton_games, get_badminton_knockout_stages
-
+from .commands import (
+    get_football_schedule,
+    get_football_table,
+    log_football_score,
+    UnplayedFootballGamesForm,
+    get_unplayed_football_games,
+    get_football_knockout_stages,
+    get_netball_schedule,
+    get_netball_table,
+    log_netball_score,
+    UnplayedNetballGamesForm,
+    get_unplayed_netball_games,
+    get_netball_knockout_stages,
+    get_kho_schedule,
+    get_kho_table,
+    log_kho_score,
+    UnplayedKhoGamesForm,
+    get_unplayed_kho_games,
+    get_kho_knockout_stages,
+    get_kabaddi_schedule,
+    get_kabaddi_table,
+    log_kabaddi_score,
+    UnplayedKabaddiGamesForm,
+    get_unplayed_kabaddi_games,
+    get_kabaddi_knockout_stages,
+    get_cricket_schedule,
+    get_cricket_table,
+    log_cricket_score,
+    UnplayedCricketGamesForm,
+    get_unplayed_cricket_games,
+    get_cricket_knockout_stages,
+    get_badminton_schedule,
+    get_badminton_table,
+    log_badminton_score,
+    UnplayedBadmintonGamesForm,
+    get_unplayed_badminton_games,
+    get_badminton_knockout_stages,
+)
 
 
 # @cache_page(60 * 10)
 def index(request: HttpRequest) -> HttpResponse:
-    service = os.environ.get('K_SERVICE', 'Unknown service')
-    revision = os.environ.get('K_REVISION', 'Unknown revision')
+    service = os.environ.get("K_SERVICE", "Unknown service")
+    revision = os.environ.get("K_REVISION", "Unknown revision")
 
-    return render(request, 'homepage.html', context={
-        "authenticated": request.user.is_authenticated,
-    })
+    return render(
+        request,
+        "homepage.html",
+        context={
+            "authenticated": request.user.is_authenticated,
+        },
+    )
 
 
 # @cache_page(60 * 10)
@@ -44,11 +78,14 @@ def football(request: HttpRequest) -> HttpResponse:
     }
     return HttpResponse(template.render(context))
 
+
 @login_required
 def logfootballscore(request: HttpRequest) -> HttpResponse:
     """Return the football_score.html template in template/home"""
     if request.user.is_authenticated:
         try:
+            home_penalty_score = None
+            away_penalty_score = None
             game_id = int(str(request.POST["game"]))
             home_score = int(str(request.POST["team_1_score"]))
             away_score = int(str(request.POST["team_2_score"]))
@@ -60,12 +97,14 @@ def logfootballscore(request: HttpRequest) -> HttpResponse:
                 away_penalty_score = None
             except Exception as e:
                 print(e)
-                home_penalty_score = None
-                away_penalty_score = None
             finally:
-                log_football_score(game_id, home_score, away_score,
-                                   home_penalty_score, away_penalty_score)
-                return HttpResponse("Success")
+                return log_football_score(
+                    game_id,
+                    home_score,
+                    away_score,
+                    home_penalty_score,
+                    away_penalty_score,
+                )
         except KeyError:
             return HttpResponse("Missing data")
         except ValueError:
@@ -76,29 +115,44 @@ def logfootballscore(request: HttpRequest) -> HttpResponse:
         raise PermissionDenied
 
 
+@login_required
 def scorefootball(request: HttpRequest) -> HttpResponse:
     """Return the football_score.html template in template/home"""
     if request.user.is_authenticated:
         if request.method == "POST":
-            logfootballscore(request)
+            function_response = logfootballscore(request)
+            if isinstance(function_response, HttpResponseBadRequest):
+                return function_response
             # Initialise the form again
             form = UnplayedFootballGamesForm()
             form.fields["game"].choices = get_unplayed_football_games()
             template: Template = loader.get_template("football_score.html")
-            return HttpResponse(template.render(context={
-                "form": form, "success": True,
-                "authenticated": request.user.is_authenticated
-            }, request=request))
+            return HttpResponse(
+                template.render(
+                    context={
+                        "form": form,
+                        "success": True,
+                        "authenticated": request.user.is_authenticated,
+                    },
+                    request=request,
+                )
+            )
         else:
             form = UnplayedFootballGamesForm()
             form.fields["game"].choices = get_unplayed_football_games()
             template: Template = loader.get_template("football_score.html")
-            return HttpResponse(template.render(context={
-                "form": form, "success": False,
-                "authenticated": request.user.is_authenticated
-            }, request=request))
+            return HttpResponse(
+                template.render(
+                    context={
+                        "form": form,
+                        "success": False,
+                        "authenticated": request.user.is_authenticated,
+                    },
+                    request=request,
+                )
+            )
     else:
-        raise PermissionDenied
+        return HttpResponseForbidden("You are not logged in")
 
 
 def netball(request: HttpRequest) -> HttpResponse:
@@ -112,6 +166,7 @@ def netball(request: HttpRequest) -> HttpResponse:
         "knockout_stages": get_netball_knockout_stages(),
     }
     return HttpResponse(template.render(context))
+
 
 @login_required
 def lognetballscore(request: HttpRequest) -> HttpResponse:
@@ -129,9 +184,13 @@ def lognetballscore(request: HttpRequest) -> HttpResponse:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-
-                log_netball_score(game_id, home_score, away_score,
-                                   home_penalty_score, away_penalty_score)
+                log_netball_score(
+                    game_id,
+                    home_score,
+                    away_score,
+                    home_penalty_score,
+                    away_penalty_score,
+                )
                 return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
@@ -143,6 +202,7 @@ def lognetballscore(request: HttpRequest) -> HttpResponse:
         raise PermissionDenied
 
 
+@login_required
 def scorenetball(request: HttpRequest) -> HttpResponse:
     """Return the netball_score.html template in template/home"""
     if request.user.is_authenticated:
@@ -152,18 +212,30 @@ def scorenetball(request: HttpRequest) -> HttpResponse:
             form = UnplayedNetballGamesForm()
             form.fields["game"].choices = get_unplayed_netball_games()
             template: Template = loader.get_template("netball_score.html")
-            return HttpResponse(template.render(context={
-                "form": form, "success": True,
-                "authenticated": request.user.is_authenticated
-            }, request=request))
+            return HttpResponse(
+                template.render(
+                    context={
+                        "form": form,
+                        "success": True,
+                        "authenticated": request.user.is_authenticated,
+                    },
+                    request=request,
+                )
+            )
         else:
             form = UnplayedNetballGamesForm()
             form.fields["game"].choices = get_unplayed_netball_games()
             template: Template = loader.get_template("netball_score.html")
-            return HttpResponse(template.render(context={
-                "form": form, "success": False,
-                "authenticated": request.user.is_authenticated
-            }, request=request))
+            return HttpResponse(
+                template.render(
+                    context={
+                        "form": form,
+                        "success": False,
+                        "authenticated": request.user.is_authenticated,
+                    },
+                    request=request,
+                )
+            )
     else:
         raise PermissionDenied
 
@@ -179,6 +251,7 @@ def cricket(request: HttpRequest) -> HttpResponse:
         "knockout_stages": get_cricket_knockout_stages(),
     }
     return HttpResponse(template.render(context))
+
 
 @login_required
 def logcricketscore(request: HttpRequest) -> HttpResponse:
@@ -196,8 +269,13 @@ def logcricketscore(request: HttpRequest) -> HttpResponse:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-                log_cricket_score(game_id, home_score, away_score,
-                                   home_penalty_score, away_penalty_score)
+                log_cricket_score(
+                    game_id,
+                    home_score,
+                    away_score,
+                    home_penalty_score,
+                    away_penalty_score,
+                )
                 return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
@@ -209,6 +287,7 @@ def logcricketscore(request: HttpRequest) -> HttpResponse:
         raise PermissionDenied
 
 
+@login_required
 def scorecricket(request: HttpRequest) -> HttpResponse:
     """Return the cricket_score.html template in template/home"""
     if request.user.is_authenticated:
@@ -218,20 +297,33 @@ def scorecricket(request: HttpRequest) -> HttpResponse:
             form = UnplayedCricketGamesForm()
             form.fields["game"].choices = get_unplayed_cricket_games()
             template: Template = loader.get_template("cricket_score.html")
-            return HttpResponse(template.render(context={
-                "form": form, "success": True,
-                "authenticated": request.user.is_authenticated
-            }, request=request))
+            return HttpResponse(
+                template.render(
+                    context={
+                        "form": form,
+                        "success": True,
+                        "authenticated": request.user.is_authenticated,
+                    },
+                    request=request,
+                )
+            )
         else:
             form = UnplayedCricketGamesForm()
             form.fields["game"].choices = get_unplayed_cricket_games()
             template: Template = loader.get_template("cricket_score.html")
-            return HttpResponse(template.render(context={
-                "form": form, "success": False,
-                "authenticated": request.user.is_authenticated
-            }, request=request))
+            return HttpResponse(
+                template.render(
+                    context={
+                        "form": form,
+                        "success": False,
+                        "authenticated": request.user.is_authenticated,
+                    },
+                    request=request,
+                )
+            )
     else:
         raise PermissionDenied
+
 
 def kabaddi(request: HttpRequest) -> HttpResponse:
     """Return the kabaddi.html template in template/home"""
@@ -244,6 +336,7 @@ def kabaddi(request: HttpRequest) -> HttpResponse:
         "knockout_stages": get_kabaddi_knockout_stages(),
     }
     return HttpResponse(template.render(context))
+
 
 @login_required
 def logkabaddiscore(request: HttpRequest) -> HttpResponse:
@@ -261,9 +354,13 @@ def logkabaddiscore(request: HttpRequest) -> HttpResponse:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-
-                log_kabaddi_score(game_id, home_score, away_score,
-                                   home_penalty_score, away_penalty_score)
+                log_kabaddi_score(
+                    game_id,
+                    home_score,
+                    away_score,
+                    home_penalty_score,
+                    away_penalty_score,
+                )
                 return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
@@ -275,6 +372,7 @@ def logkabaddiscore(request: HttpRequest) -> HttpResponse:
         raise PermissionDenied
 
 
+@login_required
 def scorekabaddi(request: HttpRequest) -> HttpResponse:
     """Return the kabaddi_score.html template in template/home"""
     if request.user.is_authenticated:
@@ -284,20 +382,33 @@ def scorekabaddi(request: HttpRequest) -> HttpResponse:
             form = UnplayedKabaddiGamesForm()
             form.fields["game"].choices = get_unplayed_kabaddi_games()
             template: Template = loader.get_template("kabaddi_score.html")
-            return HttpResponse(template.render(context={
-                "form": form, "success": True,
-                "authenticated": request.user.is_authenticated
-            }, request=request))
+            return HttpResponse(
+                template.render(
+                    context={
+                        "form": form,
+                        "success": True,
+                        "authenticated": request.user.is_authenticated,
+                    },
+                    request=request,
+                )
+            )
         else:
             form = UnplayedKabaddiGamesForm()
             form.fields["game"].choices = get_unplayed_kabaddi_games()
             template: Template = loader.get_template("kabaddi_score.html")
-            return HttpResponse(template.render(context={
-                "form": form, "success": False,
-                "authenticated": request.user.is_authenticated
-            }, request=request))
+            return HttpResponse(
+                template.render(
+                    context={
+                        "form": form,
+                        "success": False,
+                        "authenticated": request.user.is_authenticated,
+                    },
+                    request=request,
+                )
+            )
     else:
         raise PermissionDenied
+
 
 def kho(request: HttpRequest) -> HttpResponse:
     """Return the kho.html template in template/home"""
@@ -310,6 +421,7 @@ def kho(request: HttpRequest) -> HttpResponse:
         "knockout_stages": get_kho_knockout_stages(),
     }
     return HttpResponse(template.render(context))
+
 
 @login_required
 def logkhoscore(request: HttpRequest) -> HttpResponse:
@@ -327,9 +439,13 @@ def logkhoscore(request: HttpRequest) -> HttpResponse:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-
-                log_kho_score(game_id, home_score, away_score,
-                                   home_penalty_score, away_penalty_score)
+                log_kho_score(
+                    game_id,
+                    home_score,
+                    away_score,
+                    home_penalty_score,
+                    away_penalty_score,
+                )
                 return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
@@ -341,6 +457,7 @@ def logkhoscore(request: HttpRequest) -> HttpResponse:
         raise PermissionDenied
 
 
+@login_required
 def scorekho(request: HttpRequest) -> HttpResponse:
     """Return the kho_score.html template in template/home"""
     if request.user.is_authenticated:
@@ -350,20 +467,33 @@ def scorekho(request: HttpRequest) -> HttpResponse:
             form = UnplayedKhoGamesForm()
             form.fields["game"].choices = get_unplayed_kho_games()
             template: Template = loader.get_template("kho_score.html")
-            return HttpResponse(template.render(context={
-                "form": form, "success": True,
-                "authenticated": request.user.is_authenticated
-            }, request=request))
+            return HttpResponse(
+                template.render(
+                    context={
+                        "form": form,
+                        "success": True,
+                        "authenticated": request.user.is_authenticated,
+                    },
+                    request=request,
+                )
+            )
         else:
             form = UnplayedKhoGamesForm()
             form.fields["game"].choices = get_unplayed_kho_games()
             template: Template = loader.get_template("kho_score.html")
-            return HttpResponse(template.render(context={
-                "form": form, "success": False,
-                "authenticated": request.user.is_authenticated
-            }, request=request))
+            return HttpResponse(
+                template.render(
+                    context={
+                        "form": form,
+                        "success": False,
+                        "authenticated": request.user.is_authenticated,
+                    },
+                    request=request,
+                )
+            )
     else:
         raise PermissionDenied
+
 
 def badminton(request: HttpRequest) -> HttpResponse:
     """Return the badminton.html template in template/home"""
@@ -376,6 +506,7 @@ def badminton(request: HttpRequest) -> HttpResponse:
         "knockout_stages": get_badminton_knockout_stages(),
     }
     return HttpResponse(template.render(context))
+
 
 @login_required
 def logbadmintonscore(request: HttpRequest) -> HttpResponse:
@@ -393,9 +524,13 @@ def logbadmintonscore(request: HttpRequest) -> HttpResponse:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-
-                log_badminton_score(game_id, home_score, away_score,
-                                   home_penalty_score, away_penalty_score)
+                log_badminton_score(
+                    game_id,
+                    home_score,
+                    away_score,
+                    home_penalty_score,
+                    away_penalty_score,
+                )
                 return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
@@ -407,6 +542,7 @@ def logbadmintonscore(request: HttpRequest) -> HttpResponse:
         raise PermissionDenied
 
 
+@login_required
 def scorebadminton(request: HttpRequest) -> HttpResponse:
     """Return the badminton_score.html template in template/home"""
     if request.user.is_authenticated:
@@ -416,20 +552,33 @@ def scorebadminton(request: HttpRequest) -> HttpResponse:
             form = UnplayedBadmintonGamesForm()
             form.fields["game"].choices = get_unplayed_badminton_games()
             template: Template = loader.get_template("badminton_score.html")
-            return HttpResponse(template.render(context={
-                "form": form, "success": True,
-                "authenticated": request.user.is_authenticated
-            }, request=request))
+            return HttpResponse(
+                template.render(
+                    context={
+                        "form": form,
+                        "success": True,
+                        "authenticated": request.user.is_authenticated,
+                    },
+                    request=request,
+                )
+            )
         else:
             form = UnplayedBadmintonGamesForm()
             form.fields["game"].choices = get_unplayed_badminton_games()
             template: Template = loader.get_template("badminton_score.html")
-            return HttpResponse(template.render(context={
-                "form": form, "success": False,
-                "authenticated": request.user.is_authenticated
-            }, request=request))
+            return HttpResponse(
+                template.render(
+                    context={
+                        "form": form,
+                        "success": False,
+                        "authenticated": request.user.is_authenticated,
+                    },
+                    request=request,
+                )
+            )
     else:
         raise PermissionDenied
+
 
 def loaderio(request: HttpRequest) -> HttpResponse:
     """Return the loaderio verification token"""

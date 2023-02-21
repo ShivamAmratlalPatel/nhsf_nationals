@@ -27,7 +27,10 @@
 {% endif %}
 
     <!--Create a form to log scores-->
-    <div class="container-md">
+    <div class="container">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
                 <form class="form-floating mb-3" action="/scorebadminton/"
                       method="post">
                     {% csrf_token %}
@@ -37,6 +40,8 @@
                     <input class="btn btn-primary" type="submit" value="Submit">
                     <p></p>
                 </form>
-
+            </div>
+            <div class="col-3"></div>
+        </div>
     </div>
 {% endblock %}
