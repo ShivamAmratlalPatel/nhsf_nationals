@@ -15,5 +15,10 @@ urlpatterns = [
          name='loaderio'),
     path('accounts/', include("django.contrib.auth.urls")),
     path('scorefootball/', views.scorefootball, name='scorefootball'),
+    path('scorekho/', views.scorekho, name='scorekho'),
+    path('scorekabaddi/', views.scorekabaddi, name='scorekabaddi'),
+    path('scorecricket/', views.scorecricket, name='scorecricket'),
+    path('scorebadminton/', views.scorebadminton, name='scorebadminton'),
+    path('scorenetball/', views.scorenetball, name='scorenetball'),
     path('__debug__/', include(debug_toolbar.urls)),
 ]
