@@ -7,6 +7,7 @@ from ..models import CricketPitch, CricketSchedule, CricketTable, \
 from django.core.exceptions import BadRequest
 from django.db.models import Q
 
+number_of_groups = 3
 
 def generate_schedule() -> None:
     """
@@ -22,6 +23,15 @@ def generate_schedule() -> None:
 
     teams = CricketTeam.objects.all().order_by("group", "name").values(
         "team_id", "group")
+
+    # Randomly assign teams to groups
+    teams = CricketTeam.objects.all().order_by("name").values("team_id")
+    # shuffle the teams
+    random.shuffle(list(teams))
+    for i, team in enumerate(teams):
+        # Assign the team to a group
+        CricketTeam.objects.filter(team_id=team["team_id"]).update(
+            group=i % number_of_groups + 1)
 
     # Generate fixtures for each group
     for group in teams.values("group").distinct():
@@ -54,8 +64,8 @@ def generate_schedule() -> None:
         "team_id").values("schedule_id", "team__group")
 
     for index, fixture in enumerate(fixtures):
-        if fixture["team__group"] <= 3:
-            pitch = index % pitches_count + 1
+        if fixture["team__group"] <= pitches_count:
+            pitch = fixture["team__group"]
         else:
             pitch = random.randint(1, pitches_count)
         time = random.randint(0, 23)
@@ -75,15 +85,15 @@ def initalise_cricket_table() -> None:
     for team in teams:
         if not current_table.filter(team_id=team["team_id"]).exists():
             CricketTable.objects.update_or_create(team_id_id=team["team_id"],
-                                                   played=0,
-                                                   won=0,
-                                                   drawn=0,
-                                                   lost=0,
-                                                   goals_for=0,
-                                                   goals_against=0,
-                                                   goal_difference=0,
-                                                   points=0,
-                                                   points_per_game=0)
+                                                  played=0,
+                                                  won=0,
+                                                  drawn=0,
+                                                  lost=0,
+                                                  goals_for=0,
+                                                  goals_against=0,
+                                                  goal_difference=0,
+                                                  points=0,
+                                                  points_per_game=0)
 
 
 def get_cricket_schedule() -> dict:
@@ -199,17 +209,17 @@ def update_cricket_table(team_id: int) -> None:
     points = games_won * 3 + games_drawn
 
     CricketTable.objects.update_or_create(team_id=team_id,
-                                           defaults={"played": games_played,
-                                                     "won": games_won,
-                                                     "drawn": games_drawn,
-                                                     "lost": games_lost,
-                                                     "goals_for": goals_for,
-                                                     "goals_against":
-                                                         goals_against,
-                                                     "goal_difference":
-                                                         goal_difference,
-                                                     "points": points,
-                                                     "points_per_game": points / games_played if games_played else 0})
+                                          defaults={"played": games_played,
+                                                    "won": games_won,
+                                                    "drawn": games_drawn,
+                                                    "lost": games_lost,
+                                                    "goals_for": goals_for,
+                                                    "goals_against":
+                                                        goals_against,
+                                                    "goal_difference":
+                                                        goal_difference,
+                                                    "points": points,
+                                                    "points_per_game": points / games_played if games_played else 0})
 
     return
 
@@ -281,13 +291,13 @@ def generate_quarter_final() -> None:
 
     # Get top team from each group
     top_teams = CricketTable.objects.all().order_by("-points_per_game",
-                                                     "-goal_difference",
-                                                     "-goals_for").values(
+                                                    "-goal_difference",
+                                                    "-goals_for").values(
         "team_id", "team_id__group")
 
     knockout_teams = []
     # Get the top team from each group
-    for group in range(1, 6):
+    for group in range(1, number_of_groups + 1):
         top_team = top_teams.filter(team_id__group=group).first()
         knockout_teams.append(top_team["team_id"])
 
@@ -414,8 +424,8 @@ def generate_final() -> None:
 
 
 def log_cricket_score(schedule_id: int, home_score: int,
-                       away_score: int, home_penalties: int,
-                       away_penalties: int) -> None:
+                      away_score: int, home_penalties: int,
+                      away_penalties: int) -> None:
     """Log a cricket score"""
 
     if not schedule_id:

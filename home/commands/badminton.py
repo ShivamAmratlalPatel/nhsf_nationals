@@ -8,6 +8,8 @@ from ..models import BadmintonPitch, BadmintonSchedule, BadmintonTable, \
 from django.core.exceptions import BadRequest
 from django.db.models import Q
 
+number_of_groups = 5
+number_of_pitches = 4
 
 def generate_schedule() -> None:
     """
@@ -20,6 +22,15 @@ def generate_schedule() -> None:
     # If schedule already exists then don't generate it
     if BadmintonSchedule.objects.all().exists():
         return
+
+    # Randomly assign teams to groups
+    teams = BadmintonTeam.objects.all().order_by("name").values("team_id")
+    # shuffle the teams
+    random.shuffle(list(teams))
+    for i, team in enumerate(teams):
+        # Assign the team to a group
+        BadmintonTeam.objects.filter(team_id=team["team_id"]).update(
+            group=i % number_of_groups + 1)
 
     teams = BadmintonTeam.objects.all().order_by("group", "name").values(
         "team_id", "group")
@@ -54,7 +65,7 @@ def generate_schedule() -> None:
         "team_id").values("schedule_id", "team__group")
 
     for index, fixture in enumerate(fixtures):
-        if fixture["team__group"] <= 4:
+        if fixture["team__group"] <= pitches_count:
             pitch = fixture["team__group"]
         else:
             pitch = random.randint(1, pitches_count)
@@ -63,7 +74,6 @@ def generate_schedule() -> None:
             schedule_id=fixture["schedule_id"]).update(
             pitch=pitch,
             time=f"{time}:00:00")
-
 
 
 def initalise_badminton_table() -> None:
@@ -76,15 +86,15 @@ def initalise_badminton_table() -> None:
     for team in teams:
         if not current_table.filter(team_id=team["team_id"]).exists():
             BadmintonTable.objects.update_or_create(team_id_id=team["team_id"],
-                                                   played=0,
-                                                   won=0,
-                                                   drawn=0,
-                                                   lost=0,
-                                                   goals_for=0,
-                                                   goals_against=0,
-                                                   goal_difference=0,
-                                                   points=0,
-                                                   points_per_game=0)
+                                                    played=0,
+                                                    won=0,
+                                                    drawn=0,
+                                                    lost=0,
+                                                    goals_for=0,
+                                                    goals_against=0,
+                                                    goal_difference=0,
+                                                    points=0,
+                                                    points_per_game=0)
 
 
 def get_badminton_schedule() -> dict:
@@ -200,17 +210,17 @@ def update_badminton_table(team_id: int) -> None:
     points = games_won * 3 + games_drawn
 
     BadmintonTable.objects.update_or_create(team_id=team_id,
-                                           defaults={"played": games_played,
-                                                     "won": games_won,
-                                                     "drawn": games_drawn,
-                                                     "lost": games_lost,
-                                                     "goals_for": goals_for,
-                                                     "goals_against":
-                                                         goals_against,
-                                                     "goal_difference":
-                                                         goal_difference,
-                                                     "points": points,
-                                                     "points_per_game": points / games_played if games_played else 0})
+                                            defaults={"played": games_played,
+                                                      "won": games_won,
+                                                      "drawn": games_drawn,
+                                                      "lost": games_lost,
+                                                      "goals_for": goals_for,
+                                                      "goals_against":
+                                                          goals_against,
+                                                      "goal_difference":
+                                                          goal_difference,
+                                                      "points": points,
+                                                      "points_per_game": points / games_played if games_played else 0})
 
     return
 
@@ -282,13 +292,13 @@ def generate_quarter_final() -> None:
 
     # Get top team from each group
     top_teams = BadmintonTable.objects.all().order_by("-points_per_game",
-                                                     "-goal_difference",
-                                                     "-goals_for").values(
+                                                      "-goal_difference",
+                                                      "-goals_for").values(
         "team_id", "team_id__group")
 
     knockout_teams = []
     # Get the top team from each group
-    for group in range(1, 6):
+    for group in range(1, number_of_groups + 1):
         top_team = top_teams.filter(team_id__group=group).first()
         knockout_teams.append(top_team["team_id"])
 
@@ -333,7 +343,7 @@ def generate_quarter_final() -> None:
         team_id=knockout_teams[3]["team_id"],
         opponent_id=knockout_teams[4]["team_id"],
         played=False,
-        step_id=2, pitch_id=1)
+        step_id=2, pitch_id=4)
     return
 
 
@@ -349,7 +359,8 @@ def generate_semi_final() -> None:
     if BadmintonKnockout.objects.exists():
         if BadmintonKnockout.objects.filter(step_id=1, played=False).exists():
             return
-        elif BadmintonKnockout.objects.filter(step_id=2, played=False).exists():
+        elif BadmintonKnockout.objects.filter(step_id=2,
+                                              played=False).exists():
             return
         else:
             if not BadmintonKnockout.objects.filter(step_id=5).exists():
@@ -362,17 +373,20 @@ def generate_semi_final() -> None:
                     team_id=qf1.winner,
                     opponent_id=qf2.winner,
                     played=False,
-                    step_id=5, pitch_id=2)
+                    step_id=5, pitch_id=1)
 
         if BadmintonKnockout.objects.filter(step_id=3, played=False).exists():
             return
-        elif BadmintonKnockout.objects.filter(step_id=4, played=False).exists():
+        elif BadmintonKnockout.objects.filter(step_id=4,
+                                              played=False).exists():
             return
         else:
             if not BadmintonKnockout.objects.filter(step_id=6).exists():
                 # Get the winners of QF3 and QF4
-                qf3: BadmintonKnockout = BadmintonKnockout.objects.get(step_id=3)
-                qf4: BadmintonKnockout = BadmintonKnockout.objects.get(step_id=4)
+                qf3: BadmintonKnockout = BadmintonKnockout.objects.get(
+                    step_id=3)
+                qf4: BadmintonKnockout = BadmintonKnockout.objects.get(
+                    step_id=4)
 
                 # Create SF2
                 BadmintonKnockout.objects.create(
@@ -396,27 +410,30 @@ def generate_final() -> None:
         step_id=6).exists():
         if BadmintonKnockout.objects.filter(step_id=5, played=False).exists():
             return
-        elif BadmintonKnockout.objects.filter(step_id=6, played=False).exists():
+        elif BadmintonKnockout.objects.filter(step_id=6,
+                                              played=False).exists():
             return
         else:
             if not BadmintonKnockout.objects.filter(step_id=7).exists():
                 # Get the winners of SF1 and SF2
-                sf1: BadmintonKnockout = BadmintonKnockout.objects.get(step_id=5)
-                sf2: BadmintonKnockout = BadmintonKnockout.objects.get(step_id=6)
+                sf1: BadmintonKnockout = BadmintonKnockout.objects.get(
+                    step_id=5)
+                sf2: BadmintonKnockout = BadmintonKnockout.objects.get(
+                    step_id=6)
 
                 # Create the final
                 BadmintonKnockout.objects.create(
                     team_id=sf1.winner,
                     opponent_id=sf2.winner,
                     played=False,
-                    step_id=7, pitch_id=3)
+                    step_id=7, pitch_id=1)
 
         return
 
 
 def log_badminton_score(schedule_id: int, home_score: int,
-                       away_score: int, home_penalties: int,
-                       away_penalties: int) -> None:
+                        away_score: int, home_penalties: int,
+                        away_penalties: int) -> None:
     """Log a badminton score"""
 
     if not schedule_id:

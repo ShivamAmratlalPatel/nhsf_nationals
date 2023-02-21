@@ -7,6 +7,7 @@ from ..models import FootballPitch, FootballSchedule, FootballTable, \
 from django.core.exceptions import BadRequest
 from django.db.models import Q
 
+number_of_groups = 5
 
 def generate_schedule() -> None:
     """
@@ -19,6 +20,15 @@ def generate_schedule() -> None:
     # If schedule already exists then don't generate it
     if FootballSchedule.objects.all().exists():
         return
+
+    # Randomly assign teams to groups
+    teams = FootballTeam.objects.all().order_by("name").values("team_id")
+    # shuffle the teams
+    random.shuffle(list(teams))
+    for i, team in enumerate(teams):
+        # Assign the team to a group
+        FootballTeam.objects.filter(team_id=team["team_id"]).update(
+            group=i % number_of_groups + 1)
 
     teams = FootballTeam.objects.all().order_by("group", "name").values(
         "team_id", "group")
@@ -54,8 +64,8 @@ def generate_schedule() -> None:
         "team_id").values("schedule_id", "team__group")
 
     for index, fixture in enumerate(fixtures):
-        if fixture["team__group"] <= 3:
-            pitch = index % pitches_count + 1
+        if fixture["team__group"] <= pitches_count:
+            pitch = fixture["team__group"]
         else:
             pitch = random.randint(1, pitches_count)
         time = random.randint(0, 23)
@@ -287,7 +297,7 @@ def generate_quarter_final() -> None:
 
     knockout_teams = []
     # Get the top team from each group
-    for group in range(1, 6):
+    for group in range(1, number_of_groups + 1):
         top_team = top_teams.filter(team_id__group=group).first()
         knockout_teams.append(top_team["team_id"])
 
