@@ -4,181 +4,72 @@
     <title>NHSF (UK) Dharmic Games</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+          crossorigin="anonymous">
     <script src="https://kit.fontawesome.com/ece1d4b31d.js"
             crossorigin="anonymous"></script>
-    <style>
-        body, h1, h2, h3, h4, h5, h6 {
-            font-family: "Lato", sans-serif;
-        }
-
-        body, html {
-            height: 100%;
-            color: #777;
-            line-height: 1.8;
-        }
-
-        /* Create a Parallax Effect */
-        .bgimg-1, .bgimg-2, .bgimg-3 {
-            background-attachment: fixed;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-        }
-
-        /* First image (Logo. Full height) */
-        .bgimg-1 {
-            background-image: url('/w3images/parallax1.jpg');
-            min-height: 100%;
-        }
-
-        .w3-wide {
-            letter-spacing: 10px;
-        }
-
-        .w3-hover-opacity {
-            cursor: pointer;
-        }
-
-        .flex-parent-element {
-            padding: 20px;
-            display: flex;
-            flex-direction: row;
-        }
-
-        .flex-child-element {
-            width: 100%;
-            padding: 20px;
-            align-items: center;
-        }
-
-        /* Turn off parallax scrolling for tablets and phones */
-        @media only screen and (max-device-width: 1200px) {
-            .bgimg-1 {
-                background-attachment: scroll;
-                min-height: 400px;
-            }
-
-            .flex-parent-element {
-                flex-direction: column;
-            }
-        }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+            integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
+            integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD"
+            crossorigin="anonymous"></script>
 </head>
 <body>
 
-<!-- Navbar (sit on top) -->
-<div class="w3-top">
-    <div class="w3-bar" id="myNavbar">
-        <a class="w3-bar-item w3-button w3-hover-black w3-hide-medium w3-hide-large w3-right"
-           href="javascript:void(0);" onclick="toggleFunction()"
-           title="Toggle Navigation Menu">
-            <i class="fa fa-bars"></i>
-        </a>
-        <a href="/" class="w3-bar-item w3-button">HOME</a>
-        <a href="/football/" class="w3-bar-item w3-button w3-hide-small"><i
-                class="fas fa-futbol"></i> Football</a>
-        <a href="/netball/" class="w3-bar-item w3-button w3-hide-small"><i
-                class="fas fa-volleyball-ball"></i> Netball</a>
-        <a href="/kabaddi/" class="w3-bar-item w3-button w3-hide-small"><i
-                class="fas fa-dumbbell"></i> Kabaddi</a>
-        <a href="/kho/" class="w3-bar-item w3-button w3-hide-small"><i
-                class="fas fa-running"></i> Kho-kho</a>
-        <a href="/badminton/" class="w3-bar-item w3-button w3-hide-small"><i
-                class="fa-solid fa-badminton"></i> Badminton</a>
-        <a href="/cricket/" class="w3-bar-item w3-button w3-hide-small"><i
-                class="fas fa-baseball-ball"></i> Cricket</a>
-        {% if authenticated %}
-        <a href="{% url 'logout' %}"
-           class="w3-bar-item w3-button w3-hide-small">Log Out</a>
-        <a href="/scorefootball/" class="w3-bar-item w3-button w3-hide-small"><i
-                class="fas fa-edit"></i> Scoring</a>
-        {% else %}
-        <a href="{% url 'login' %}"
-           class="w3-bar-item w3-button w3-hide-small">Log In</a>
-        {% endif %}
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Home</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/football/">Football</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/netball/">Netball</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/cricket/">Cricket</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/netball/">Netball</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/netball/">Netball</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Dropdown link
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another
+                            action</a></li>
+                        <li><a class="dropdown-item" href="#">Something else
+                            here</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
-
-    <!-- Navbar on small screens -->
-    <div id="navDemo"
-         class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium">
-        <a href="/football/" class="w3-bar-item w3-button"
-           onclick="toggleFunction()">Football</a>
-        <a href="/netball/" class="w3-bar-item w3-button"
-           onclick="toggleFunction()">Netball</a>
-        <a href="/kabaddi/" class="w3-bar-item w3-button"
-           onclick="toggleFunction()">Kabbadi</a>
-        <a href="/kho/" class="w3-bar-item w3-button"
-           onclick="toggleFunction()">Kho-Kho</a>
-        <a href="/Badminton/" class="w3-bar-item w3-button"
-           onclick="toggleFunction()">Badminton</a>
-        <a href="/Cricket/" class="w3-bar-item w3-button"
-           onclick="toggleFunction()">Cricket</a>
-        {% if authenticated %}
-        <a href="{% url 'logout' %}"
-           class="w3-bar-item w3-button" onclick="toggleFunction()">Log
-            Out</a>
-        <a href="/scorefootball/" class="w3-bar-item w3-button"
-           onclick="toggleFunction()">Scoring</a>
-        {% else %}
-        <a href="{% url 'login' %}"
-           class="w3-bar-item w3-button" onclick="toggleFunction()">Log
-            In</a>
-        {% endif %}
-    </div>
-</div>
+</nav>
 <div id="home"></div>
+
+<div class="container-fluid">
 {% block content %}
 {% endblock %}
-
-<!-- Footer -->
-<footer class="w3-center w3-black w3-padding-64 w3-opacity w3-hover-opacity-off">
-    <a href="#home" class="w3-button w3-light-grey"><i
-            class="fa-solid fa-arrow-up w3-margin-right"></i>To the top</a>
-    <div class="w3-xlarge w3-section">
-        <a href="https://www.facebook.com/NHSF.UK"><i
-                class="fa-brands fa-facebook"></i></a>
-        <a href="https://www.instagram.com/nhsf_uk/"><i
-                class="fa-brands fa-instagram"></i></a>
-        <a href="https://twitter.com/nhsf_uk"><i
-                class="fa-brands fa-twitter w3-hover-opacity"></i></a>
-    </div>
-</footer>
-
-<script>
-    // Modal Image Gallery
-    function onClick(element) {
-        document.getElementById("img01").src = element.src;
-        document.getElementById("modal01").style.display = "block";
-        let captionText = document.getElementById("caption");
-        captionText.innerHTML = element.alt;
-    }
-
-    // Change style of navbar on scroll
-    window.onscroll = function () {
-        myFunction()
-    };
-
-    function myFunction() {
-        let navbar = document.getElementById("myNavbar");
-        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-            navbar.className = "w3-bar" + " w3-card" + " w3-animate-top" + " w3-white";
-        } else {
-            navbar.className = navbar.className.replace(" w3-card w3-animate-top w3-white", "");
-        }
-    }
-
-    // Used to toggle the menu on small screens when clicking on the menu button
-    function toggleFunction() {
-        let x = document.getElementById("navDemo");
-        if (x.className.indexOf("w3-show") === -1) {
-            x.className += " w3-show";
-        } else {
-            x.className = x.className.replace(" w3-show", "");
-        }
-    }
-</script>
-
+</div>
 </body>
 </html>
