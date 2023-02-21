@@ -9,6 +9,7 @@ from django.db.models import Q
 
 number_of_groups = 2
 
+
 def generate_schedule() -> None:
     """
     Generate the kabaddi schedule.
@@ -85,15 +86,15 @@ def initalise_kabaddi_table() -> None:
     for team in teams:
         if not current_table.filter(team_id=team["team_id"]).exists():
             KabaddiTable.objects.update_or_create(team_id_id=team["team_id"],
-                                                   played=0,
-                                                   won=0,
-                                                   drawn=0,
-                                                   lost=0,
-                                                   goals_for=0,
-                                                   goals_against=0,
-                                                   goal_difference=0,
-                                                   points=0,
-                                                   points_per_game=0)
+                                                  played=0,
+                                                  won=0,
+                                                  drawn=0,
+                                                  lost=0,
+                                                  goals_for=0,
+                                                  goals_against=0,
+                                                  goal_difference=0,
+                                                  points=0,
+                                                  points_per_game=0)
 
 
 def get_kabaddi_schedule() -> dict:
@@ -209,17 +210,17 @@ def update_kabaddi_table(team_id: int) -> None:
     points = games_won * 3 + games_drawn
 
     KabaddiTable.objects.update_or_create(team_id=team_id,
-                                           defaults={"played": games_played,
-                                                     "won": games_won,
-                                                     "drawn": games_drawn,
-                                                     "lost": games_lost,
-                                                     "goals_for": goals_for,
-                                                     "goals_against":
-                                                         goals_against,
-                                                     "goal_difference":
-                                                         goal_difference,
-                                                     "points": points,
-                                                     "points_per_game": points / games_played if games_played else 0})
+                                          defaults={"played": games_played,
+                                                    "won": games_won,
+                                                    "drawn": games_drawn,
+                                                    "lost": games_lost,
+                                                    "goals_for": goals_for,
+                                                    "goals_against":
+                                                        goals_against,
+                                                    "goal_difference":
+                                                        goal_difference,
+                                                    "points": points,
+                                                    "points_per_game": points / games_played if games_played else 0})
 
     return
 
@@ -259,12 +260,12 @@ class UnplayedKabaddiGamesForm(forms.Form):
     """Form to validate unplayed games"""
     choices = get_unplayed_kabaddi_games()
     game = forms.ChoiceField(label="Game", choices=choices)
-    team_1_score = forms.IntegerField(label="Team 1 Goals")
-    team_2_score = forms.IntegerField(label="Team 2 Goals")
+    team_1_score = forms.IntegerField(label="Team 1 Goals", min_value=0)
+    team_2_score = forms.IntegerField(label="Team 2 Goals", min_value=0)
     team_1_penalty = forms.IntegerField(label="Team 1 Penalties",
-                                        required=False)
+                                        required=False, min_value=0)
     team_2_penalty = forms.IntegerField(label="Team 2 Penalties",
-                                        required=False)
+                                        required=False, min_value=0)
 
 
 def generate_quarter_final() -> None:
@@ -291,8 +292,8 @@ def generate_quarter_final() -> None:
 
     # Get top team from each group
     top_teams = KabaddiTable.objects.all().order_by("-points_per_game",
-                                                     "-goal_difference",
-                                                     "-goals_for").values(
+                                                    "-goal_difference",
+                                                    "-goals_for").values(
         "team_id", "team_id__group")
 
     knockout_teams = []
@@ -424,17 +425,17 @@ def generate_final() -> None:
 
 
 def log_kabaddi_score(schedule_id: int, home_score: int,
-                       away_score: int, home_penalties: int,
-                       away_penalties: int) -> None:
+                      away_score: int, home_penalties: int,
+                      away_penalties: int) -> None:
     """Log a kabaddi score"""
 
-    if not schedule_id:
+    if not schedule_id and schedule_id != 0:
         raise BadRequest("Schedule ID is required")
 
-    if not home_score:
+    if not away_score and home_score != 0:
         raise BadRequest("Home score is required")
 
-    if not away_score:
+    if not away_score and away_score != 0:
         raise BadRequest("Away score is required")
 
     if KabaddiSchedule.objects.filter(played=False).exists():
@@ -452,6 +453,13 @@ def log_kabaddi_score(schedule_id: int, home_score: int,
         generate_quarter_final()
         return
     else:
+        if home_score == away_score:
+            if home_penalties is None or away_penalties is None:
+                raise BadRequest("Penalties are required")
+            if not home_penalties and not away_penalties:
+                raise BadRequest("Penalties are required")
+            elif home_penalties == away_penalties:
+                raise BadRequest("Penalties cannot be equal")
         KabaddiKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
             opponent_score=away_score,

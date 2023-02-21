@@ -9,6 +9,7 @@ from django.db.models import Q
 
 number_of_groups = 5
 
+
 def generate_schedule() -> None:
     """
     Generate the kho schedule.
@@ -85,15 +86,15 @@ def initalise_kho_table() -> None:
     for team in teams:
         if not current_table.filter(team_id=team["team_id"]).exists():
             KhoTable.objects.update_or_create(team_id_id=team["team_id"],
-                                                   played=0,
-                                                   won=0,
-                                                   drawn=0,
-                                                   lost=0,
-                                                   goals_for=0,
-                                                   goals_against=0,
-                                                   goal_difference=0,
-                                                   points=0,
-                                                   points_per_game=0)
+                                              played=0,
+                                              won=0,
+                                              drawn=0,
+                                              lost=0,
+                                              goals_for=0,
+                                              goals_against=0,
+                                              goal_difference=0,
+                                              points=0,
+                                              points_per_game=0)
 
 
 def get_kho_schedule() -> dict:
@@ -209,17 +210,17 @@ def update_kho_table(team_id: int) -> None:
     points = games_won * 3 + games_drawn
 
     KhoTable.objects.update_or_create(team_id=team_id,
-                                           defaults={"played": games_played,
-                                                     "won": games_won,
-                                                     "drawn": games_drawn,
-                                                     "lost": games_lost,
-                                                     "goals_for": goals_for,
-                                                     "goals_against":
-                                                         goals_against,
-                                                     "goal_difference":
-                                                         goal_difference,
-                                                     "points": points,
-                                                     "points_per_game": points / games_played if games_played else 0})
+                                      defaults={"played": games_played,
+                                                "won": games_won,
+                                                "drawn": games_drawn,
+                                                "lost": games_lost,
+                                                "goals_for": goals_for,
+                                                "goals_against":
+                                                    goals_against,
+                                                "goal_difference":
+                                                    goal_difference,
+                                                "points": points,
+                                                "points_per_game": points / games_played if games_played else 0})
 
     return
 
@@ -291,8 +292,8 @@ def generate_quarter_final() -> None:
 
     # Get top team from each group
     top_teams = KhoTable.objects.all().order_by("-points_per_game",
-                                                     "-goal_difference",
-                                                     "-goals_for").values(
+                                                "-goal_difference",
+                                                "-goals_for").values(
         "team_id", "team_id__group")
 
     knockout_teams = []
@@ -424,17 +425,17 @@ def generate_final() -> None:
 
 
 def log_kho_score(schedule_id: int, home_score: int,
-                       away_score: int, home_penalties: int,
-                       away_penalties: int) -> None:
+                  away_score: int, home_penalties: int,
+                  away_penalties: int) -> None:
     """Log a kho score"""
 
-    if not schedule_id:
+    if not schedule_id and schedule_id != 0:
         raise BadRequest("Schedule ID is required")
 
-    if not home_score:
+    if not away_score and home_score != 0:
         raise BadRequest("Home score is required")
 
-    if not away_score:
+    if not away_score and away_score != 0:
         raise BadRequest("Away score is required")
 
     if KhoSchedule.objects.filter(played=False).exists():
@@ -452,6 +453,13 @@ def log_kho_score(schedule_id: int, home_score: int,
         generate_quarter_final()
         return
     else:
+        if home_score == away_score:
+            if home_penalties is None or away_penalties is None:
+                raise BadRequest("Penalties are required")
+            if not home_penalties and not away_penalties:
+                raise BadRequest("Penalties are required")
+            elif home_penalties == away_penalties:
+                raise BadRequest("Penalties cannot be equal")
         KhoKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
             opponent_score=away_score,

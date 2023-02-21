@@ -47,7 +47,7 @@
                 <h4>Group {{ group }}</h4>
                 <table class="table table-striped">
                     <tr>
-                        <th>Team</th>
+                        <th style="position: sticky; left: 0; z-index: 1; background-color: lightgrey">Team</th>
                         <th>Played</th>
                         <th>Won</th>
                         <th>Drawn</th>
@@ -57,7 +57,7 @@
                     </tr>
                     {% for value in table %}
                         <tr>
-                            <td>{{ value.team }}</td>
+                            <td style="position: sticky; left: 0; z-index: 1; background-color: lightgrey">{{ value.team }}</td>
                             <td>{{ value.played }}</td>
                             <td>{{ value.won }}</td>
                             <td>{{ value.drawn }}</td>
