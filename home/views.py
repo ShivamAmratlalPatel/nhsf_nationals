@@ -124,13 +124,12 @@ def lognetballscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception:
-                print(Exception)
+            except Exception as e:
+                print(e)
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-                print(game_id, home_score, away_score, home_penalty_score,
-                      away_penalty_score)
+
                 log_netball_score(game_id, home_score, away_score,
                                    home_penalty_score, away_penalty_score)
                 return HttpResponse("Success")
@@ -192,13 +191,11 @@ def logcricketscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception:
-                print(Exception)
+            except Exception as e:
+                print(e)
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-                print(game_id, home_score, away_score, home_penalty_score,
-                      away_penalty_score)
                 log_cricket_score(game_id, home_score, away_score,
                                    home_penalty_score, away_penalty_score)
                 return HttpResponse("Success")
@@ -259,13 +256,12 @@ def logkabaddiscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception:
-                print(Exception)
+            except Exception as e:
+                print(e)
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-                print(game_id, home_score, away_score, home_penalty_score,
-                      away_penalty_score)
+
                 log_kabaddi_score(game_id, home_score, away_score,
                                    home_penalty_score, away_penalty_score)
                 return HttpResponse("Success")
@@ -326,13 +322,12 @@ def logkhoscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception:
-                print(Exception)
+            except Exception as e:
+                print(e)
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-                print(game_id, home_score, away_score, home_penalty_score,
-                      away_penalty_score)
+
                 log_kho_score(game_id, home_score, away_score,
                                    home_penalty_score, away_penalty_score)
                 return HttpResponse("Success")
@@ -393,13 +388,12 @@ def logbadmintonscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception:
-                print(Exception)
+            except Exception as e:
+                print(e)
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-                print(game_id, home_score, away_score, home_penalty_score,
-                      away_penalty_score)
+
                 log_badminton_score(game_id, home_score, away_score,
                                    home_penalty_score, away_penalty_score)
                 return HttpResponse("Success")

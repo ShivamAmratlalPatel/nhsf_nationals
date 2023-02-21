@@ -161,9 +161,6 @@ class FootballKnockout(models.Model):
         elif self.team_score < self.opponent_score:
             return self.opponent.team_id
         else:
-            print(self)
-            print(self.team_score, self.opponent_score)
-            print(self.team_penalty, self.opponent_penalty)
             if self.team_penalty > self.opponent_penalty:
                 return self.team.team_id
             else:
