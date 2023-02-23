@@ -1,6 +1,7 @@
 import random
 
 from django import forms
+from django.http import HttpResponseBadRequest, HttpResponse
 
 from ..models import (
     FootballPitch,
@@ -304,10 +305,14 @@ class UnplayedFootballGamesForm(forms.Form):
 
     choices = get_unplayed_football_games()
     game = forms.ChoiceField(label="Game", choices=choices)
-    team_1_score = forms.IntegerField(label="Team 1 Goals")
-    team_2_score = forms.IntegerField(label="Team 2 Goals")
-    team_1_penalty = forms.IntegerField(label="Team 1 Penalties", required=False)
-    team_2_penalty = forms.IntegerField(label="Team 2 Penalties", required=False)
+    team_1_score = forms.IntegerField(label="Team 1 Goals", min_value=0)
+    team_2_score = forms.IntegerField(label="Team 2 Goals", min_value=0)
+    team_1_penalty = forms.IntegerField(
+        label="Team 1 Penalties", min_value=0, required=False
+    )
+    team_2_penalty = forms.IntegerField(
+        label="Team 2 Penalties", min_value=0, required=False
+    )
 
 
 def generate_quarter_final() -> None:
@@ -492,13 +497,13 @@ def log_football_score(
 ) -> str:
     """Log a football score"""
 
-    if not schedule_id:
+    if not schedule_id and schedule_id != 0:
         raise BadRequest("Schedule ID is required")
 
-    if not home_score:
+    if not away_score and home_score != 0:
         raise BadRequest("Home score is required")
 
-    if not away_score:
+    if not away_score and away_score != 0:
         raise BadRequest("Away score is required")
 
     if FootballSchedule.objects.filter(played=False).exists():
@@ -518,6 +523,15 @@ def log_football_score(
         message = f"{game.team.name} vs {game.opponent.name} with a score of {home_score} - {away_score}"
         return message
     else:
+        print(home_score, away_score, home_penalties, away_penalties)
+        if home_score == away_score:
+            if home_penalties is None or away_penalties is None:
+                print("Penalties are required")
+                return HttpResponseBadRequest("Penalties are required")
+            if not home_penalties and not away_penalties:
+                return HttpResponseBadRequest()
+            elif home_penalties == away_penalties:
+                return HttpResponseBadRequest()
         FootballKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
             opponent_score=away_score,

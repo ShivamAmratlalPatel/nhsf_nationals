@@ -2,7 +2,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 import os
-from django.http import HttpResponse, HttpRequest, HttpResponseServerError
+from django.http import (
+    HttpResponse,
+    HttpRequest,
+    HttpResponseServerError,
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+)
 from django.template import loader, Template
 
 from .commands import (
@@ -79,6 +85,8 @@ def logfootballscore(request: HttpRequest) -> HttpResponse:
     """Return the football_score.html template in template/home"""
     if request.user.is_authenticated:
         try:
+            home_penalty_score = None
+            away_penalty_score = None
             game_id = int(str(request.POST["game"]))
             home_score = int(str(request.POST["team_1_score"]))
             away_score = int(str(request.POST["team_2_score"]))
@@ -90,8 +98,6 @@ def logfootballscore(request: HttpRequest) -> HttpResponse:
                 away_penalty_score = None
             except Exception as e:
                 print(e)
-                home_penalty_score = None
-                away_penalty_score = None
             finally:
                 score_log = log_football_score(
                     game_id,
@@ -115,11 +121,14 @@ def logfootballscore(request: HttpRequest) -> HttpResponse:
         raise PermissionDenied
 
 
+@login_required
 def scorefootball(request: HttpRequest) -> HttpResponse:
     """Return the football_score.html template in template/home"""
     if request.user.is_authenticated:
         if request.method == "POST":
-            logfootballscore(request)
+            function_response = logfootballscore(request)
+            if isinstance(function_response, HttpResponseBadRequest):
+                return function_response
             # Initialise the form again
             form = UnplayedFootballGamesForm()
             form.fields["game"].choices = get_unplayed_football_games()
@@ -149,7 +158,7 @@ def scorefootball(request: HttpRequest) -> HttpResponse:
                 )
             )
     else:
-        raise PermissionDenied
+        return HttpResponseForbidden("You are not logged in")
 
 
 def netball(request: HttpRequest) -> HttpResponse:
@@ -176,8 +185,8 @@ def lognetballscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception:
-                print(Exception)
+            except Exception as e:
+                print(e)
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
@@ -210,6 +219,7 @@ def lognetballscore(request: HttpRequest) -> HttpResponse:
         raise PermissionDenied
 
 
+@login_required
 def scorenetball(request: HttpRequest) -> HttpResponse:
     """Return the netball_score.html template in template/home"""
     if request.user.is_authenticated:
@@ -271,8 +281,8 @@ def logcricketscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception:
-                print(Exception)
+            except Exception as e:
+                print(e)
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
@@ -305,6 +315,7 @@ def logcricketscore(request: HttpRequest) -> HttpResponse:
         raise PermissionDenied
 
 
+@login_required
 def scorecricket(request: HttpRequest) -> HttpResponse:
     """Return the cricket_score.html template in template/home"""
     if request.user.is_authenticated:
@@ -366,8 +377,8 @@ def logkabaddiscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception:
-                print(Exception)
+            except Exception as e:
+                print(e)
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
@@ -400,6 +411,7 @@ def logkabaddiscore(request: HttpRequest) -> HttpResponse:
         raise PermissionDenied
 
 
+@login_required
 def scorekabaddi(request: HttpRequest) -> HttpResponse:
     """Return the kabaddi_score.html template in template/home"""
     if request.user.is_authenticated:
@@ -461,8 +473,8 @@ def logkhoscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception:
-                print(Exception)
+            except Exception as e:
+                print(e)
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
@@ -495,6 +507,7 @@ def logkhoscore(request: HttpRequest) -> HttpResponse:
         raise PermissionDenied
 
 
+@login_required
 def scorekho(request: HttpRequest) -> HttpResponse:
     """Return the kho_score.html template in template/home"""
     if request.user.is_authenticated:
@@ -556,8 +569,8 @@ def logbadmintonscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception:
-                print(Exception)
+            except Exception as e:
+                print(e)
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
@@ -590,6 +603,7 @@ def logbadmintonscore(request: HttpRequest) -> HttpResponse:
         raise PermissionDenied
 
 
+@login_required
 def scorebadminton(request: HttpRequest) -> HttpResponse:
     """Return the badminton_score.html template in template/home"""
     if request.user.is_authenticated:

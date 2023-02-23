@@ -484,13 +484,13 @@ def log_kho_score(
 ) -> str:
     """Log a kho score"""
 
-    if not schedule_id:
+    if not schedule_id and schedule_id != 0:
         raise BadRequest("Schedule ID is required")
 
-    if not home_score:
+    if not away_score and home_score != 0:
         raise BadRequest("Home score is required")
 
-    if not away_score:
+    if not away_score and away_score != 0:
         raise BadRequest("Away score is required")
 
     if KhoSchedule.objects.filter(played=False).exists():
@@ -506,6 +506,13 @@ def log_kho_score(
         message = f"{game.team.name} vs {game.opponent.name} with a score of {home_score} - {away_score}"
         return message
     else:
+        if home_score == away_score:
+            if home_penalties is None or away_penalties is None:
+                raise BadRequest("Penalties are required")
+            if not home_penalties and not away_penalties:
+                raise BadRequest("Penalties are required")
+            elif home_penalties == away_penalties:
+                raise BadRequest("Penalties cannot be equal")
         KhoKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
             opponent_score=away_score,
