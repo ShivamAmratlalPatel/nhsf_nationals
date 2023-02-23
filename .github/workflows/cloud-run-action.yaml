@@ -12,7 +12,7 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v0
 
       - name: Setup GCP Service Account
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@v0
