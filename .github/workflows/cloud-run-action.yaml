@@ -21,7 +21,7 @@ jobs:
           with:
             project_id: ${{ secrets.GCP_PROJECT_ID }}
             service_account_email: ${{ secrets.GCP_SA_EMAIL }}
-            service_account_key: ${{ secrets.GVP_SA_KEY }}
+            service_account_key: ${{ secrets.GCP_SA_KEY }}
 
         - name: Configure Docker
           run: gcloud auth configure-docker --quiet
