@@ -11,12 +11,14 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-import google_crc32c
+
 import dj_database_url
+import google_crc32c
 
 
-def access_secret_version(project_id='able-door-377617',
-                          secret_id='django-settings', version_id=3):
+def access_secret_version(
+    project_id="able-door-377617", secret_id="django-settings", version_id=3
+):
     """
     Access the payload for the given secret version if one exists. The version
     can be a version number as a string (e.g. "5") or an alias (e.g. "latest").
@@ -39,7 +41,7 @@ def access_secret_version(project_id='able-door-377617',
     if response.payload.data_crc32c != int(crc32c.hexdigest(), 16):
         print("Data corruption detected.")
         return response
-    return response.payload.data.decode('UTF-8')
+    return response.payload.data.decode("UTF-8")
 
 
 env_variables = access_secret_version()
@@ -51,13 +53,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env_variables.split('\n')[1].split('=')[1]
+SECRET_KEY = env_variables.split("\n")[1].split("=")[1]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 # Change this to your production URL for deployment
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -68,34 +70,32 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'debug_toolbar',
-    'home',
+    "debug_toolbar",
+    "home",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'django.middleware.common.CommonMiddleware',
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-url = '='.join(env_variables.split('\n')[0].split('=')[1:])
+url = "=".join(env_variables.split("\n")[0].split("=")[1:])
 
-DATABASES = {
-    'default': dj_database_url.config(default=url)
-}
+DATABASES = {"default": dj_database_url.config(default=url)}
 
-ROOT_URLCONF = 'helloproject.urls'
+ROOT_URLCONF = "helloproject.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -106,19 +106,21 @@ TEMPLATES = [
     },
 ]
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = "/static/"
 
-CSRF_TRUSTED_ORIGINS = ['https://dharmic-games.nhsf.org.uk/',
-                        'https://nhsf.org.uk/',
-                        'https://*.nhsf.org.uk/',
-                        'https://sportscompetition.shivampatel.uk',
-                        'https://nhsf-uxn4znw4lq-ew.a.run.app']
+CSRF_TRUSTED_ORIGINS = [
+    "https://dharmic-games.nhsf.org.uk/",
+    "https://nhsf.org.uk/",
+    "https://*.nhsf.org.uk/",
+    "https://sportscompetition.shivampatel.uk",
+    "https://nhsf-uxn4znw4lq-ew.a.run.app",
+]
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-WSGI_APPLICATION = 'helloproject.wsgi.application'
+WSGI_APPLICATION = "helloproject.wsgi.application"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -138,9 +140,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'my_cache_table',
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "my_cache_table",
     }
 }
 
@@ -149,9 +151,9 @@ INTERNAL_IPS = [
 ]
 
 # Set language code to UK
-LANGUAGE_CODE = 'en-gb'
+LANGUAGE_CODE = "en-gb"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 

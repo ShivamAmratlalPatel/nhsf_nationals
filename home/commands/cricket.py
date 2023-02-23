@@ -1,16 +1,17 @@
 import random
 
 from django import forms
+from django.core.exceptions import BadRequest
+from django.db.models import Q
+from django.http import HttpResponseBadRequest
 
 from ..models import (
+    CricketKnockout,
     CricketPitch,
     CricketSchedule,
     CricketTable,
     CricketTeam,
-    CricketKnockout,
 )
-from django.core.exceptions import BadRequest
-from django.db.models import Q
 
 number_of_groups = 3
 
@@ -26,10 +27,6 @@ def generate_schedule() -> None:
     # If schedule already exists then don't generate it
     if CricketSchedule.objects.all().exists():
         return
-
-    teams = (
-        CricketTeam.objects.all().order_by("group", "name").values("team_id", "group")
-    )
 
     # Randomly assign teams to groups
     teams = CricketTeam.objects.all().order_by("name").values("team_id")
@@ -493,17 +490,17 @@ def log_cricket_score(
     away_score: int,
     home_penalties: int,
     away_penalties: int,
-) -> str:
+) -> HttpResponseBadRequest | str:
     """Log a cricket score"""
 
     if not schedule_id and schedule_id != 0:
         raise BadRequest("Schedule ID is required")
 
-    if not away_score and home_score != 0:
-        raise BadRequest("Home score is required")
+    if not home_score and home_score != 0:
+        return HttpResponseBadRequest("Home score is required")
 
     if not away_score and away_score != 0:
-        raise BadRequest("Away score is required")
+        return HttpResponseBadRequest("Away score is required")
 
     if CricketSchedule.objects.filter(played=False).exists():
         CricketSchedule.objects.filter(schedule_id=schedule_id).update(
@@ -524,11 +521,11 @@ def log_cricket_score(
     else:
         if home_score == away_score:
             if home_penalties is None or away_penalties is None:
-                raise BadRequest("Penalties are required")
+                return HttpResponseBadRequest("Penalties are required")
             if not home_penalties and not away_penalties:
-                raise BadRequest("Penalties are required")
+                return HttpResponseBadRequest("Penalties are required")
             elif home_penalties == away_penalties:
-                raise BadRequest("Penalties cannot be equal")
+                return HttpResponseBadRequest("Penalties can't be equal")
         CricketKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
             opponent_score=away_score,
