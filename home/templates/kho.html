@@ -75,30 +75,32 @@
             {% endfor %}
         </div>
 
-        <div>
-            <h3>Knockout Stages</h3>
-            <div>
-                <div>
-                    <table class="table">
-                        <tr>
-                            <th>Stage</th>
-                            <th>Match</th>
-                        </tr>
-                        {% for round, value in knockout_stages.items %}
+    <div>
+        <h3>Knockout Stages</h3>
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                {% for round, value in knockout_stages.items %}
+                    <div class="col">
+                        <table class="table table-bordered table-hover">
                             <tr>
-                                <td> {{ round }}</td>
-                                <td><p>{{ value.team }}
-                                    v {{ value.opponent }}</p>
+                                <th class="text-center">{{ round }}</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p class="text-center"
+                                       style="margin : 0; padding-top:0;">{{ value.team }}
+                                        v {{ value.opponent }}</p>
                                     {% if value.played %}
-                                        <p>{{ value.result }}</p>
+                                        <p class="text-center">{{ value.result }}</p>
                                     {% endif %}
                                 </td>
                             </tr>
-                        {% endfor %}
-                    </table>
-                </div>
+                        </table>
+                    </div>
+                {% endfor %}
             </div>
         </div>
+    </div>
     </div>
 
 {% endblock %}
