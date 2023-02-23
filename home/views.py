@@ -1,62 +1,58 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import render, redirect
-import os
 from django.http import (
-    HttpResponse,
     HttpRequest,
-    HttpResponseServerError,
+    HttpResponse,
     HttpResponseBadRequest,
     HttpResponseForbidden,
+    HttpResponseServerError,
 )
-from django.template import loader, Template
+from django.shortcuts import redirect, render
+from django.template import Template, loader
 
 from .commands import (
-    get_football_schedule,
-    get_football_table,
-    log_football_score,
-    UnplayedFootballGamesForm,
-    get_unplayed_football_games,
-    get_football_knockout_stages,
-    get_netball_schedule,
-    get_netball_table,
-    log_netball_score,
-    UnplayedNetballGamesForm,
-    get_unplayed_netball_games,
-    get_netball_knockout_stages,
-    get_kho_schedule,
-    get_kho_table,
-    log_kho_score,
-    UnplayedKhoGamesForm,
-    get_unplayed_kho_games,
-    get_kho_knockout_stages,
-    get_kabaddi_schedule,
-    get_kabaddi_table,
-    log_kabaddi_score,
-    UnplayedKabaddiGamesForm,
-    get_unplayed_kabaddi_games,
-    get_kabaddi_knockout_stages,
-    get_cricket_schedule,
-    get_cricket_table,
-    log_cricket_score,
+    UnplayedBadmintonGamesForm,
     UnplayedCricketGamesForm,
-    get_unplayed_cricket_games,
-    get_cricket_knockout_stages,
+    UnplayedFootballGamesForm,
+    UnplayedKabaddiGamesForm,
+    UnplayedKhoGamesForm,
+    UnplayedNetballGamesForm,
+    get_badminton_knockout_stages,
     get_badminton_schedule,
     get_badminton_table,
-    log_badminton_score,
-    UnplayedBadmintonGamesForm,
+    get_cricket_knockout_stages,
+    get_cricket_schedule,
+    get_cricket_table,
+    get_football_knockout_stages,
+    get_football_schedule,
+    get_football_table,
+    get_kabaddi_knockout_stages,
+    get_kabaddi_schedule,
+    get_kabaddi_table,
+    get_kho_knockout_stages,
+    get_kho_schedule,
+    get_kho_table,
+    get_netball_knockout_stages,
+    get_netball_schedule,
+    get_netball_table,
     get_unplayed_badminton_games,
-    get_badminton_knockout_stages,
+    get_unplayed_cricket_games,
+    get_unplayed_football_games,
+    get_unplayed_kabaddi_games,
+    get_unplayed_kho_games,
+    get_unplayed_netball_games,
+    log_badminton_score,
+    log_cricket_score,
+    log_football_score,
+    log_kabaddi_score,
+    log_kho_score,
+    log_netball_score,
     send_message,
 )
 
 
 # @cache_page(60 * 10)
 def index(request: HttpRequest) -> HttpResponse:
-    service = os.environ.get("K_SERVICE", "Unknown service")
-    revision = os.environ.get("K_REVISION", "Unknown revision")
-
     return render(
         request,
         "homepage.html",
@@ -106,6 +102,8 @@ def logfootballscore(request: HttpRequest) -> HttpResponse:
                     home_penalty_score,
                     away_penalty_score,
                 )
+                if isinstance(score_log, HttpResponseBadRequest):
+                    return score_log
                 send_message(
                     "football",
                     f"{request.user.first_name} {request.user.last_name} has logged football game {score_log}",
@@ -178,13 +176,6 @@ def lognetballscore(request: HttpRequest) -> HttpResponse:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-                print(
-                    game_id,
-                    home_score,
-                    away_score,
-                    home_penalty_score,
-                    away_penalty_score,
-                )
                 score_log = log_netball_score(
                     game_id,
                     home_score,
@@ -192,6 +183,8 @@ def lognetballscore(request: HttpRequest) -> HttpResponse:
                     home_penalty_score,
                     away_penalty_score,
                 )
+                if isinstance(score_log, HttpResponseBadRequest):
+                    return score_log
                 send_message(
                     "netball",
                     f"{request.user.first_name} {request.user.last_name} has logged netball game {score_log}",
@@ -264,13 +257,6 @@ def logcricketscore(request: HttpRequest) -> HttpResponse:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-                print(
-                    game_id,
-                    home_score,
-                    away_score,
-                    home_penalty_score,
-                    away_penalty_score,
-                )
                 score_log = log_cricket_score(
                     game_id,
                     home_score,
@@ -278,6 +264,8 @@ def logcricketscore(request: HttpRequest) -> HttpResponse:
                     home_penalty_score,
                     away_penalty_score,
                 )
+                if isinstance(score_log, HttpResponseBadRequest):
+                    return score_log
                 send_message(
                     "cricket",
                     f"{request.user.first_name} {request.user.last_name} has logged cricket game {score_log}",
@@ -350,13 +338,6 @@ def logkabaddiscore(request: HttpRequest) -> HttpResponse:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-                print(
-                    game_id,
-                    home_score,
-                    away_score,
-                    home_penalty_score,
-                    away_penalty_score,
-                )
                 score_log = log_kabaddi_score(
                     game_id,
                     home_score,
@@ -364,6 +345,8 @@ def logkabaddiscore(request: HttpRequest) -> HttpResponse:
                     home_penalty_score,
                     away_penalty_score,
                 )
+                if isinstance(score_log, HttpResponseBadRequest):
+                    return score_log
                 send_message(
                     "kabaddi",
                     f"{request.user.first_name} {request.user.last_name} has logged kabaddi game {score_log}",
@@ -436,13 +419,6 @@ def logkhoscore(request: HttpRequest) -> HttpResponse:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-                print(
-                    game_id,
-                    home_score,
-                    away_score,
-                    home_penalty_score,
-                    away_penalty_score,
-                )
                 score_log = log_kho_score(
                     game_id,
                     home_score,
@@ -450,6 +426,8 @@ def logkhoscore(request: HttpRequest) -> HttpResponse:
                     home_penalty_score,
                     away_penalty_score,
                 )
+                if isinstance(score_log, HttpResponseBadRequest):
+                    return score_log
                 send_message(
                     "kho",
                     f"{request.user.first_name} {request.user.last_name} has logged kho game {score_log}",
@@ -474,7 +452,7 @@ def scorekho(request: HttpRequest) -> HttpResponse:
             if isinstance(function_response, HttpResponseBadRequest):
                 return function_response
             # Return kho page
-            return redirect('/kho/')
+            return redirect("/kho/")
         else:
             form = UnplayedKhoGamesForm()
             form.fields["game"].choices = get_unplayed_kho_games()
@@ -522,13 +500,6 @@ def logbadmintonscore(request: HttpRequest) -> HttpResponse:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-                print(
-                    game_id,
-                    home_score,
-                    away_score,
-                    home_penalty_score,
-                    away_penalty_score,
-                )
                 score_log = log_badminton_score(
                     game_id,
                     home_score,
@@ -536,6 +507,8 @@ def logbadmintonscore(request: HttpRequest) -> HttpResponse:
                     home_penalty_score,
                     away_penalty_score,
                 )
+                if isinstance(score_log, HttpResponseBadRequest):
+                    return score_log
                 send_message(
                     "badminton",
                     f"{request.user.first_name} {request.user.last_name} has logged badminton game {score_log}",
@@ -560,7 +533,7 @@ def scorebadminton(request: HttpRequest) -> HttpResponse:
             if isinstance(function_response, HttpResponseBadRequest):
                 return function_response
             # Return badminton page
-            return redirect('/badminton/')
+            return redirect("/badminton/")
         else:
             form = UnplayedBadmintonGamesForm()
             form.fields["game"].choices = get_unplayed_badminton_games()

@@ -1,10 +1,11 @@
 import random
 
 from django import forms
-
-from ..models import KhoPitch, KhoSchedule, KhoTable, KhoTeam, KhoKnockout
 from django.core.exceptions import BadRequest
 from django.db.models import Q
+from django.http import HttpResponseBadRequest
+
+from ..models import KhoKnockout, KhoPitch, KhoSchedule, KhoTable, KhoTeam
 
 number_of_groups = 5
 
@@ -20,8 +21,6 @@ def generate_schedule() -> None:
     # If schedule already exists then don't generate it
     if KhoSchedule.objects.all().exists():
         return
-
-    teams = KhoTeam.objects.all().order_by("group", "name").values("team_id", "group")
 
     # Randomly assign teams to groups
     teams = KhoTeam.objects.all().order_by("name").values("team_id")
@@ -481,17 +480,17 @@ def log_kho_score(
     away_score: int,
     home_penalties: int,
     away_penalties: int,
-) -> str:
+) -> HttpResponseBadRequest | str:
     """Log a kho score"""
 
     if not schedule_id and schedule_id != 0:
         raise BadRequest("Schedule ID is required")
 
-    if not away_score and home_score != 0:
-        raise BadRequest("Home score is required")
+    if not home_score and home_score != 0:
+        return HttpResponseBadRequest("Home score is required")
 
     if not away_score and away_score != 0:
-        raise BadRequest("Away score is required")
+        return HttpResponseBadRequest("Away score is required")
 
     if KhoSchedule.objects.filter(played=False).exists():
         KhoSchedule.objects.filter(schedule_id=schedule_id).update(
@@ -508,11 +507,11 @@ def log_kho_score(
     else:
         if home_score == away_score:
             if home_penalties is None or away_penalties is None:
-                raise BadRequest("Penalties are required")
+                return HttpResponseBadRequest("Penalties are required")
             if not home_penalties and not away_penalties:
-                raise BadRequest("Penalties are required")
+                return HttpResponseBadRequest("Penalties are required")
             elif home_penalties == away_penalties:
-                raise BadRequest("Penalties cannot be equal")
+                return HttpResponseBadRequest("Penalties can't be equal")
         KhoKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
             opponent_score=away_score,

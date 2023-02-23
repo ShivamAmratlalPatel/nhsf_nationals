@@ -1,17 +1,17 @@
-import datetime
 import random
 
 from django import forms
+from django.core.exceptions import BadRequest
+from django.db.models import Q
+from django.http import HttpResponseBadRequest
 
 from ..models import (
+    BadmintonKnockout,
     BadmintonPitch,
     BadmintonSchedule,
     BadmintonTable,
     BadmintonTeam,
-    BadmintonKnockout,
 )
-from django.core.exceptions import BadRequest
-from django.db.models import Q
 
 number_of_groups = 5
 number_of_pitches = 4
@@ -494,17 +494,17 @@ def log_badminton_score(
     away_score: int,
     home_penalties: int,
     away_penalties: int,
-) -> str:
+) -> HttpResponseBadRequest | str:
     """Log a badminton score"""
 
     if not schedule_id and schedule_id != 0:
         raise BadRequest("Schedule ID is required")
 
-    if not away_score and home_score != 0:
-        raise BadRequest("Home score is required")
+    if not home_score and home_score != 0:
+        return HttpResponseBadRequest("Home score is required")
 
     if not away_score and away_score != 0:
-        raise BadRequest("Away score is required")
+        return HttpResponseBadRequest("Away score is required")
 
     if BadmintonSchedule.objects.filter(played=False).exists():
         BadmintonSchedule.objects.filter(schedule_id=schedule_id).update(
@@ -525,11 +525,11 @@ def log_badminton_score(
     else:
         if home_score == away_score:
             if home_penalties is None or away_penalties is None:
-                raise BadRequest("Penalties are required")
+                return HttpResponseBadRequest("Penalties are required")
             if not home_penalties and not away_penalties:
-                raise BadRequest("Penalties are required")
+                return HttpResponseBadRequest("Penalties are required")
             elif home_penalties == away_penalties:
-                raise BadRequest("Penalties cannot be equal")
+                return HttpResponseBadRequest("Penalties can't be equal")
         BadmintonKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
             opponent_score=away_score,
