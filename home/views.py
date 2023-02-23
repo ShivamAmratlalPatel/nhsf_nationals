@@ -127,7 +127,6 @@ def scorefootball(request: HttpRequest) -> HttpResponse:
         if request.method == "POST":
             function_response = logfootballscore(request)
             if isinstance(function_response, HttpResponse):
-                print(function_response)
                 form = UnplayedFootballGamesForm()
                 form.fields["game"].choices = get_unplayed_football_games()
                 template: Template = loader.get_template(
