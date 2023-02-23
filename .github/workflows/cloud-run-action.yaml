@@ -2,9 +2,8 @@ name: Docker
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches:
+      - master
 
 jobs:
 
@@ -36,4 +35,4 @@ jobs:
           run: docker push $IMAGE_NAME
 
         - name: Deploy Docker image
-          run: gcloud run deploy ${{ secrets.GCP_PROJECT_ID }} --image $IMAGE_NAME --region us-central1 --platform managed
+          run: gcloud run deploy --quiet ${{ secrets.GCP_PROJECT_ID }} --image $IMAGE_NAME --platform managed --project ${{ secrets.GCP_PROJECT_ID }} --memory 256Mi --timeout 300 --concurrency 100 --max-instances 1000 --cpu 1 --clear-env-vars --clear-cloudsql-instances --client-name "Github Actions" --region europe-west1 --allow-unauthenticated --clear-vpc-connector
