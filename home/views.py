@@ -3,7 +3,6 @@ from django.core.exceptions import PermissionDenied
 from django.http import (
     HttpRequest,
     HttpResponse,
-    HttpResponseBadRequest,
     HttpResponseForbidden,
     HttpResponseServerError,
 )
