@@ -525,7 +525,7 @@ def log_kabaddi_score(
     else:
         if home_score == away_score:
             if home_penalties is None or away_penalties is None:
-                return HttpResponseBadRequest("Penalties are required")
+                return HttpResponseBadRequest("Both penalties are required")
             if not home_penalties and not away_penalties:
                 return HttpResponseBadRequest("Penalties are required")
             elif home_penalties == away_penalties:
