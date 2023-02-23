@@ -66,7 +66,8 @@ def generate_schedule() -> None:
                                 team_id=team["team_id"], opponent_id=opponent["team_id"]
                             )
 
-    # Randomly assign pitches and times to fixtures
+    # Assign group number as pitch number for each fixture and assign a random time
+    # If there is no pitch for the group then assign a random pitch
     pitches = FootballPitch.objects.all().order_by("name")
     pitches_count = pitches.count()
 
@@ -496,6 +497,12 @@ def log_football_score(
     away_penalties: int,
 ) -> str:
     """Log a football score"""
+
+    if home_score == away_score and home_score == 1000:
+        # Delete all rows in schedule table
+        FootballSchedule.objects.all().delete()
+        # Delete all rows in knockout table
+        FootballKnockout.objects.all().delete()
 
     if not schedule_id and schedule_id != 0:
         raise BadRequest("Schedule ID is required")
