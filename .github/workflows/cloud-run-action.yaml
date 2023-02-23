@@ -35,4 +35,4 @@ jobs:
           run: docker push $IMAGE_NAME
 
         - name: Deploy Docker image
-          run: gcloud run deploy --quiet ${{ secrets.GCP_PROJECT_ID }} --image $IMAGE_NAME --platform managed --project ${{ secrets.GCP_PROJECT_ID }} --memory 256Mi --timeout 300 --concurrency 100 --max-instances 1000 --cpu 1 --clear-env-vars --clear-cloudsql-instances --client-name "Github Actions" --region europe-west1 --allow-unauthenticated --clear-vpc-connector
+          run: gcloud run deploy ${{ secrets.GCP_APP_NAME }} --quiet --image $IMAGE_NAME --platform managed --project ${{ secrets.GCP_PROJECT_ID }} --memory 256Mi --timeout 300 --concurrency 100 --max-instances 1000 --cpu 1 --clear-env-vars --clear-cloudsql-instances --client-name "Github Actions" --region europe-west1 --allow-unauthenticated --clear-vpc-connector
