@@ -108,7 +108,7 @@ def logfootballscore(request: HttpRequest) -> HttpResponse:
                 )
                 send_message(
                     "football",
-                    f"{request.user.first_name} {request.user.last_name} has logged game {score_log}",
+                    f"{request.user.first_name} {request.user.last_name} has logged football game {score_log}",
                 )
                 return HttpResponse("Success")
         except KeyError:
@@ -194,7 +194,7 @@ def lognetballscore(request: HttpRequest) -> HttpResponse:
                 )
                 send_message(
                     "netball",
-                    f"{request.user.first_name} {request.user.last_name} has logged game {score_log}",
+                    f"{request.user.first_name} {request.user.last_name} has logged netball game {score_log}",
                 )
                 return HttpResponse("Success")
         except KeyError:
@@ -280,7 +280,7 @@ def logcricketscore(request: HttpRequest) -> HttpResponse:
                 )
                 send_message(
                     "cricket",
-                    f"{request.user.first_name} {request.user.last_name} has logged game {score_log}",
+                    f"{request.user.first_name} {request.user.last_name} has logged cricket game {score_log}",
                 )
                 return HttpResponse("Success")
         except KeyError:
@@ -366,7 +366,7 @@ def logkabaddiscore(request: HttpRequest) -> HttpResponse:
                 )
                 send_message(
                     "kabaddi",
-                    f"{request.user.first_name} {request.user.last_name} has logged game {score_log}",
+                    f"{request.user.first_name} {request.user.last_name} has logged kabaddi game {score_log}",
                 )
                 return HttpResponse("Success")
         except KeyError:
@@ -452,7 +452,7 @@ def logkhoscore(request: HttpRequest) -> HttpResponse:
                 )
                 send_message(
                     "kho",
-                    f"{request.user.first_name} {request.user.last_name} has logged game {score_log}",
+                    f"{request.user.first_name} {request.user.last_name} has logged kho game {score_log}",
                 )
                 return HttpResponse("Success")
         except KeyError:
@@ -538,7 +538,7 @@ def logbadmintonscore(request: HttpRequest) -> HttpResponse:
                 )
                 send_message(
                     "badminton",
-                    f"{request.user.first_name} {request.user.last_name} has logged game {score_log}",
+                    f"{request.user.first_name} {request.user.last_name} has logged badminton game {score_log}",
                 )
                 return HttpResponse("Success")
         except KeyError:
