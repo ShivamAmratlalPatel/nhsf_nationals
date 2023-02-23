@@ -494,7 +494,7 @@ def log_football_score(
     away_score: int,
     home_penalties: int,
     away_penalties: int,
-) -> HttpResponse | HttpResponseBadRequest:
+) -> str:
     """Log a football score"""
 
     if not schedule_id and schedule_id != 0:
@@ -519,7 +519,9 @@ def log_football_score(
         )
 
         generate_quarter_final()
-        return HttpResponse("Success")
+        game = FootballSchedule.objects.get(schedule_id=schedule_id)
+        message = f"{game.team.name} vs {game.opponent.name} with a score of {home_score} - {away_score}"
+        return message
     else:
         print(home_score, away_score, home_penalties, away_penalties)
         if home_score == away_score:
@@ -540,8 +542,11 @@ def log_football_score(
 
         generate_semi_final()
         generate_final()
-
-    return HttpResponse("Success")
+        game = FootballKnockout.objects.get(id=schedule_id)
+        message = f"{game.team.name} vs {game.opponent.name} score is {home_score} - {away_score}"
+        if home_penalties and away_penalties:
+            message += f" with penalties of {home_penalties} - {away_penalties}"
+        return message
 
 
 def get_football_knockout_stages() -> dict:

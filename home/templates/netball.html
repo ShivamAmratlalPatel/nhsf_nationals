@@ -44,16 +44,19 @@
     <div>
         {% for group, table in group_stages.items %}
             <div style="overflow: auto; padding: 10px 0">
-                <h4>Group {{ group }}</h4>
+                <h4 style="position: sticky; left: 0; z-index: 1;">
+                    Group {{ group }}</h4>
                 <table class="table table-striped">
                     <tr>
-                        <th style="position: sticky; left: 0; z-index: 1; background-color: lightgrey">Team</th>
+                        <th style="position: sticky; left: 0; z-index: 1; background-color: lightgrey;">
+                            Team
+                        </th>
                         <th>Played</th>
                         <th>Won</th>
                         <th>Drawn</th>
                         <th>Lost</th>
                         <th>Goal Difference</th>
-                        <th>Points</th>
+                        <th>Total Points</th>
                     </tr>
                     {% for value in table %}
                         <tr>

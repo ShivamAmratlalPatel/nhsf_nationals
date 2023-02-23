@@ -125,7 +125,7 @@ def get_kho_schedule() -> dict:
         )
     )
     pitches = KhoPitch.objects.all().values("name")
-    output = {pitch["name"]: [] for pitch in pitches}
+    output: dict = {pitch["name"]: [] for pitch in pitches}
 
     [
         output[game["pitch__name"]].append(
@@ -165,7 +165,7 @@ def get_kho_table() -> dict:
 
     groups = KhoTeam.objects.all().values("group").distinct().order_by("group")
 
-    output = {group["group"]: [] for group in groups}
+    output: dict = {group["group"]: [] for group in groups}
 
     [
         output[team["team_id__group"]].append(
@@ -481,7 +481,7 @@ def log_kho_score(
     away_score: int,
     home_penalties: int,
     away_penalties: int,
-) -> None:
+) -> str:
     """Log a kho score"""
 
     if not schedule_id and schedule_id != 0:
@@ -502,7 +502,9 @@ def log_kho_score(
         update_kho_table(KhoSchedule.objects.get(schedule_id=schedule_id).opponent_id)
 
         generate_quarter_final()
-        return
+        game = KhoSchedule.objects.get(schedule_id=schedule_id)
+        message = f"{game.team.name} vs {game.opponent.name} with a score of {home_score} - {away_score}"
+        return message
     else:
         if home_score == away_score:
             if home_penalties is None or away_penalties is None:
@@ -521,8 +523,11 @@ def log_kho_score(
 
         generate_semi_final()
         generate_final()
-
-    return
+        game = KhoKnockout.objects.get(id=schedule_id)
+        message = f"{game.team.name} vs {game.opponent.name} score is {home_score} - {away_score}"
+        if home_penalties and away_penalties:
+            message += f" with penalties of {home_penalties} - {away_penalties}"
+        return message
 
 
 def get_kho_knockout_stages() -> dict:

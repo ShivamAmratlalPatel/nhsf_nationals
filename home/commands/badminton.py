@@ -494,7 +494,7 @@ def log_badminton_score(
     away_score: int,
     home_penalties: int,
     away_penalties: int,
-) -> None:
+) -> str:
     """Log a badminton score"""
 
     if not schedule_id and schedule_id != 0:
@@ -519,7 +519,9 @@ def log_badminton_score(
         )
 
         generate_quarter_final()
-        return
+        game = BadmintonSchedule.objects.get(schedule_id=schedule_id)
+        message = f"{game.team.name} vs {game.opponent.name} with a score of {home_score} - {away_score}"
+        return message
     else:
         if home_score == away_score:
             if home_penalties is None or away_penalties is None:
@@ -538,8 +540,11 @@ def log_badminton_score(
 
         generate_semi_final()
         generate_final()
-
-    return
+        game = BadmintonKnockout.objects.get(id=schedule_id)
+        message = f"{game.team.name} vs {game.opponent.name} score is {home_score} - {away_score}"
+        if home_penalties and away_penalties:
+            message += f" with penalties of {home_penalties} - {away_penalties}"
+        return message
 
 
 def get_badminton_knockout_stages() -> dict:

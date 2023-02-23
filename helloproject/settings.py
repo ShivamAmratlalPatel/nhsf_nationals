@@ -16,7 +16,7 @@ import dj_database_url
 
 
 def access_secret_version(project_id='able-door-377617',
-                          secret_id='django-settings', version_id=2):
+                          secret_id='django-settings', version_id=3):
     """
     Access the payload for the given secret version if one exists. The version
     can be a version number as a string (e.g. "5") or an alias (e.g. "latest").

@@ -3,73 +3,76 @@
 {% block title %}Football{% endblock %}
 
 {% block content %}
-        <h2>Football</h2>
-        <h3>Schedule</h3>
-        <div class="container text-center">
-            <div class="row">
-                {% for pitch, value in schedules.items %}
+    <h2>Football</h2>
+    <h3>Schedule</h3>
+    <div class="container text-center">
+        <div class="row">
+            {% for pitch, value in schedules.items %}
 
-                    <div class="col-md-4">
-                        <table class="table table-bordered table-hover">
-                            <tr>
-                                <th>{{ pitch }}</th>
-                            </tr>
-                            {% for row1 in value %}
-                                {% if row1.played %}
-                                    <tr class="table-primary">
-                                        <td>
-                                            <p style="margin : 0; padding-top:0;">{{ row1.game }}</p>
-                                            <!--                         <p style="margin : 0; padding-top:0;">{{ row1.time }}</p>-->
-                                            <p style="margin : 0; padding-top:0;">{{ row1.result }}</p>
-                                        </td>
-                                    </tr>
-                                {% endif %}
-                                {% if not row1.played %}
-                                    <tr class="table-secondary">
-                                        <td>
-                                            <p style="margin : 0; padding-top:0;">{{ row1.game }}</p>
-                                            <!--                         <p style="margin : 0; padding-top:0;">{{ row1.time }}</p>-->
-                                        </td>
-                                    </tr>
-                                {% endif %}
-                            {% endfor %}
-                        </table>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-
-
-        <h3>Group Stages</h3>
-        <div>
-            {% for group, table in group_stages.items %}
-                <div style="overflow: auto; padding: 10px 0">
-                    <h4>Group {{ group }}</h4>
-                    <table class="table table-striped">
+                <div class="col-md-4">
+                    <table class="table table-bordered table-hover">
                         <tr>
-                            <th>Team</th>
-                            <th>Played</th>
-                            <th>Won</th>
-                            <th>Drawn</th>
-                            <th>Lost</th>
-                            <th>Goal Difference</th>
-                            <th>Points</th>
+                            <th>{{ pitch }}</th>
                         </tr>
-                        {% for value in table %}
-                            <tr>
-                                <td>{{ value.team }}</td>
-                                <td>{{ value.played }}</td>
-                                <td>{{ value.won }}</td>
-                                <td>{{ value.drawn }}</td>
-                                <td>{{ value.lost }}</td>
-                                <td>{{ value.goal_difference }}</td>
-                                <td>{{ value.points }}</td>
-                            </tr>
+                        {% for row1 in value %}
+                            {% if row1.played %}
+                                <tr class="table-primary">
+                                    <td>
+                                        <p style="margin : 0; padding-top:0;">{{ row1.game }}</p>
+                                        <!--                         <p style="margin : 0; padding-top:0;">{{ row1.time }}</p>-->
+                                        <p style="margin : 0; padding-top:0;">{{ row1.result }}</p>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            {% if not row1.played %}
+                                <tr class="table-secondary">
+                                    <td>
+                                        <p style="margin : 0; padding-top:0;">{{ row1.game }}</p>
+                                        <!--                         <p style="margin : 0; padding-top:0;">{{ row1.time }}</p>-->
+                                    </td>
+                                </tr>
+                            {% endif %}
                         {% endfor %}
                     </table>
                 </div>
             {% endfor %}
         </div>
+    </div>
+
+
+    <h3>Group Stages</h3>
+    <div>
+        {% for group, table in group_stages.items %}
+            <div style="overflow: auto; padding: 10px 0">
+                <h4 style="position: sticky; left: 0; z-index: 1;">
+                    Group {{ group }}</h4>
+                <table class="table table-striped">
+                    <tr>
+                        <th style="position: sticky; left: 0; z-index: 1; background-color: lightgrey;">
+                            Team
+                        </th>
+                        <th>Played</th>
+                        <th>Won</th>
+                        <th>Drawn</th>
+                        <th>Lost</th>
+                        <th>Goal Difference</th>
+                        <th>Total Points</th>
+                    </tr>
+                    {% for value in table %}
+                        <tr>
+                            <td style="position: sticky; left: 0; z-index: 1; background-color: lightgrey">{{ value.team }}</td>
+                            <td>{{ value.played }}</td>
+                            <td>{{ value.won }}</td>
+                            <td>{{ value.drawn }}</td>
+                            <td>{{ value.lost }}</td>
+                            <td>{{ value.goal_difference }}</td>
+                            <td>{{ value.points }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endfor %}
+    </div>
 
     <div>
         <h3>Knockout Stages</h3>
