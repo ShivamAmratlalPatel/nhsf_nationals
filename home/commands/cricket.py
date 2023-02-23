@@ -425,7 +425,7 @@ def generate_final() -> None:
 
 def log_cricket_score(schedule_id: int, home_score: int,
                       away_score: int, home_penalties: int,
-                      away_penalties: int) -> None:
+                      away_penalties: int) -> str:
     """Log a cricket score"""
 
     if not schedule_id:
@@ -450,7 +450,9 @@ def log_cricket_score(schedule_id: int, home_score: int,
             schedule_id=schedule_id).opponent_id)
 
         generate_quarter_final()
-        return
+        game = CricketSchedule.objects.get(schedule_id=schedule_id)
+        message = f"{game.team.name} vs {game.opponent.name} with a score of {home_score} - {away_score}"
+        return message
     else:
         CricketKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
@@ -461,8 +463,11 @@ def log_cricket_score(schedule_id: int, home_score: int,
 
         generate_semi_final()
         generate_final()
-
-    return
+        game = CricketKnockout.objects.get(id=schedule_id)
+        message = f"{game.team.name} vs {game.opponent.name} score is {home_score} - {away_score}"
+        if home_penalties and away_penalties:
+            message += f" with penalties of {home_penalties} - {away_penalties}"
+        return message
 
 
 def get_cricket_knockout_stages() -> dict:

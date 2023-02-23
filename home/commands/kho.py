@@ -110,7 +110,7 @@ def get_kho_schedule() -> dict:
         "time").values("pitch__name", "team__name", "opponent__name",
                        "team_score", "opponent_score", "time", "played")
     pitches = KhoPitch.objects.all().values("name")
-    output = {pitch["name"]: [] for pitch in pitches}
+    output: dict = {pitch["name"]: [] for pitch in pitches}
 
     [output[game["pitch__name"]].append(
         {"game": f"{game['team__name']} vs {game['opponent__name']}",
@@ -140,7 +140,7 @@ def get_kho_table() -> dict:
     groups = KhoTeam.objects.all().values("group").distinct().order_by(
         "group")
 
-    output = {group["group"]: [] for group in groups}
+    output: dict = {group["group"]: [] for group in groups}
 
     [output[team["team_id__group"]].append(
         {"team": team["team_id__name"],
@@ -425,7 +425,7 @@ def generate_final() -> None:
 
 def log_kho_score(schedule_id: int, home_score: int,
                        away_score: int, home_penalties: int,
-                       away_penalties: int) -> None:
+                       away_penalties: int) -> str:
     """Log a kho score"""
 
     if not schedule_id:
@@ -450,7 +450,9 @@ def log_kho_score(schedule_id: int, home_score: int,
             schedule_id=schedule_id).opponent_id)
 
         generate_quarter_final()
-        return
+        game = KhoSchedule.objects.get(schedule_id=schedule_id)
+        message = f"{game.team.name} vs {game.opponent.name} with a score of {home_score} - {away_score}"
+        return message
     else:
         KhoKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
@@ -461,8 +463,11 @@ def log_kho_score(schedule_id: int, home_score: int,
 
         generate_semi_final()
         generate_final()
-
-    return
+        game = KhoKnockout.objects.get(id=schedule_id)
+        message = f"{game.team.name} vs {game.opponent.name} score is {home_score} - {away_score}"
+        if home_penalties and away_penalties:
+            message += f" with penalties of {home_penalties} - {away_penalties}"
+        return message
 
 
 def get_kho_knockout_stages() -> dict:

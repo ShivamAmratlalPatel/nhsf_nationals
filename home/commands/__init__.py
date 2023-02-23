@@ -21,3 +21,4 @@ from .badminton import get_badminton_schedule, get_badminton_table, \
     update_badminton_table, initalise_badminton_table, log_badminton_score, \
     UnplayedBadmintonGamesForm, get_unplayed_badminton_games, \
     get_badminton_knockout_stages
+from .twilio_sms import send_message

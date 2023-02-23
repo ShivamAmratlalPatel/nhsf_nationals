@@ -7,18 +7,22 @@ from django.template import loader, Template
 
 from .commands import get_football_schedule, get_football_table, \
     log_football_score, \
-    UnplayedFootballGamesForm, get_unplayed_football_games, get_football_knockout_stages, \
+    UnplayedFootballGamesForm, get_unplayed_football_games, \
+    get_football_knockout_stages, \
     get_netball_schedule, get_netball_table, log_netball_score, \
-    UnplayedNetballGamesForm, get_unplayed_netball_games, get_netball_knockout_stages, \
+    UnplayedNetballGamesForm, get_unplayed_netball_games, \
+    get_netball_knockout_stages, \
     get_kho_schedule, get_kho_table, log_kho_score, UnplayedKhoGamesForm, \
     get_unplayed_kho_games, get_kho_knockout_stages, \
     get_kabaddi_schedule, get_kabaddi_table, log_kabaddi_score, \
-    UnplayedKabaddiGamesForm, get_unplayed_kabaddi_games, get_kabaddi_knockout_stages, \
+    UnplayedKabaddiGamesForm, get_unplayed_kabaddi_games, \
+    get_kabaddi_knockout_stages, \
     get_cricket_schedule, get_cricket_table, log_cricket_score, \
-    UnplayedCricketGamesForm, get_unplayed_cricket_games, get_cricket_knockout_stages, \
+    UnplayedCricketGamesForm, get_unplayed_cricket_games, \
+    get_cricket_knockout_stages, \
     get_badminton_schedule, get_badminton_table, log_badminton_score, \
-    UnplayedBadmintonGamesForm, get_unplayed_badminton_games, get_badminton_knockout_stages
-
+    UnplayedBadmintonGamesForm, get_unplayed_badminton_games, \
+    get_badminton_knockout_stages, send_message
 
 
 # @cache_page(60 * 10)
@@ -44,6 +48,7 @@ def football(request: HttpRequest) -> HttpResponse:
     }
     return HttpResponse(template.render(context))
 
+
 @login_required
 def logfootballscore(request: HttpRequest) -> HttpResponse:
     """Return the football_score.html template in template/home"""
@@ -63,8 +68,11 @@ def logfootballscore(request: HttpRequest) -> HttpResponse:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
-                log_football_score(game_id, home_score, away_score,
-                                   home_penalty_score, away_penalty_score)
+                score_log = log_football_score(game_id, home_score, away_score,
+                                               home_penalty_score,
+                                               away_penalty_score)
+                send_message("football",
+                             f"{request.user.first_name} {request.user.last_name} has logged game {score_log}")
                 return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
@@ -113,6 +121,7 @@ def netball(request: HttpRequest) -> HttpResponse:
     }
     return HttpResponse(template.render(context))
 
+
 @login_required
 def lognetballscore(request: HttpRequest) -> HttpResponse:
     """Return the netball_score.html template in template/home"""
@@ -131,8 +140,11 @@ def lognetballscore(request: HttpRequest) -> HttpResponse:
             finally:
                 print(game_id, home_score, away_score, home_penalty_score,
                       away_penalty_score)
-                log_netball_score(game_id, home_score, away_score,
-                                   home_penalty_score, away_penalty_score)
+                score_log = log_netball_score(game_id, home_score, away_score,
+                                              home_penalty_score,
+                                              away_penalty_score)
+                send_message("netball",
+                             f"{request.user.first_name} {request.user.last_name} has logged game {score_log}")
                 return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
@@ -181,6 +193,7 @@ def cricket(request: HttpRequest) -> HttpResponse:
     }
     return HttpResponse(template.render(context))
 
+
 @login_required
 def logcricketscore(request: HttpRequest) -> HttpResponse:
     """Return the cricket_score.html template in template/home"""
@@ -199,8 +212,11 @@ def logcricketscore(request: HttpRequest) -> HttpResponse:
             finally:
                 print(game_id, home_score, away_score, home_penalty_score,
                       away_penalty_score)
-                log_cricket_score(game_id, home_score, away_score,
-                                   home_penalty_score, away_penalty_score)
+                score_log = log_cricket_score(game_id, home_score, away_score,
+                                              home_penalty_score,
+                                              away_penalty_score)
+                send_message("cricket",
+                             f"{request.user.first_name} {request.user.last_name} has logged game {score_log}")
                 return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
@@ -236,6 +252,7 @@ def scorecricket(request: HttpRequest) -> HttpResponse:
     else:
         raise PermissionDenied
 
+
 def kabaddi(request: HttpRequest) -> HttpResponse:
     """Return the kabaddi.html template in template/home"""
 
@@ -247,6 +264,7 @@ def kabaddi(request: HttpRequest) -> HttpResponse:
         "knockout_stages": get_kabaddi_knockout_stages(),
     }
     return HttpResponse(template.render(context))
+
 
 @login_required
 def logkabaddiscore(request: HttpRequest) -> HttpResponse:
@@ -266,8 +284,11 @@ def logkabaddiscore(request: HttpRequest) -> HttpResponse:
             finally:
                 print(game_id, home_score, away_score, home_penalty_score,
                       away_penalty_score)
-                log_kabaddi_score(game_id, home_score, away_score,
-                                   home_penalty_score, away_penalty_score)
+                score_log = log_kabaddi_score(game_id, home_score, away_score,
+                                              home_penalty_score,
+                                              away_penalty_score)
+                send_message("kabaddi",
+                             f"{request.user.first_name} {request.user.last_name} has logged game {score_log}")
                 return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
@@ -303,6 +324,7 @@ def scorekabaddi(request: HttpRequest) -> HttpResponse:
     else:
         raise PermissionDenied
 
+
 def kho(request: HttpRequest) -> HttpResponse:
     """Return the kho.html template in template/home"""
 
@@ -314,6 +336,7 @@ def kho(request: HttpRequest) -> HttpResponse:
         "knockout_stages": get_kho_knockout_stages(),
     }
     return HttpResponse(template.render(context))
+
 
 @login_required
 def logkhoscore(request: HttpRequest) -> HttpResponse:
@@ -333,8 +356,11 @@ def logkhoscore(request: HttpRequest) -> HttpResponse:
             finally:
                 print(game_id, home_score, away_score, home_penalty_score,
                       away_penalty_score)
-                log_kho_score(game_id, home_score, away_score,
-                                   home_penalty_score, away_penalty_score)
+                score_log = log_kho_score(game_id, home_score, away_score,
+                                          home_penalty_score,
+                                          away_penalty_score)
+                send_message("kho",
+                             f"{request.user.first_name} {request.user.last_name} has logged game {score_log}")
                 return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
@@ -370,6 +396,7 @@ def scorekho(request: HttpRequest) -> HttpResponse:
     else:
         raise PermissionDenied
 
+
 def badminton(request: HttpRequest) -> HttpResponse:
     """Return the badminton.html template in template/home"""
 
@@ -381,6 +408,7 @@ def badminton(request: HttpRequest) -> HttpResponse:
         "knockout_stages": get_badminton_knockout_stages(),
     }
     return HttpResponse(template.render(context))
+
 
 @login_required
 def logbadmintonscore(request: HttpRequest) -> HttpResponse:
@@ -400,8 +428,12 @@ def logbadmintonscore(request: HttpRequest) -> HttpResponse:
             finally:
                 print(game_id, home_score, away_score, home_penalty_score,
                       away_penalty_score)
-                log_badminton_score(game_id, home_score, away_score,
-                                   home_penalty_score, away_penalty_score)
+                score_log = log_badminton_score(game_id, home_score,
+                                                away_score,
+                                                home_penalty_score,
+                                                away_penalty_score)
+                send_message("badminton",
+                             f"{request.user.first_name} {request.user.last_name} has logged game {score_log}")
                 return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
@@ -436,6 +468,7 @@ def scorebadminton(request: HttpRequest) -> HttpResponse:
             }, request=request))
     else:
         raise PermissionDenied
+
 
 def loaderio(request: HttpRequest) -> HttpResponse:
     """Return the loaderio verification token"""

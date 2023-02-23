@@ -140,7 +140,7 @@ def get_kabaddi_table() -> dict:
     groups = KabaddiTeam.objects.all().values("group").distinct().order_by(
         "group")
 
-    output = {group["group"]: [] for group in groups}
+    output: dict = {group["group"]: [] for group in groups}
 
     [output[team["team_id__group"]].append(
         {"team": team["team_id__name"],
@@ -425,7 +425,7 @@ def generate_final() -> None:
 
 def log_kabaddi_score(schedule_id: int, home_score: int,
                        away_score: int, home_penalties: int,
-                       away_penalties: int) -> None:
+                       away_penalties: int) -> str:
     """Log a kabaddi score"""
 
     if not schedule_id:
@@ -450,7 +450,9 @@ def log_kabaddi_score(schedule_id: int, home_score: int,
             schedule_id=schedule_id).opponent_id)
 
         generate_quarter_final()
-        return
+        game = KabaddiSchedule.objects.get(schedule_id=schedule_id)
+        message = f"{game.team.name} vs {game.opponent.name} with a score of {home_score} - {away_score}"
+        return message
     else:
         KabaddiKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
@@ -461,8 +463,11 @@ def log_kabaddi_score(schedule_id: int, home_score: int,
 
         generate_semi_final()
         generate_final()
-
-    return
+        game = KabaddiKnockout.objects.get(id=schedule_id)
+        message = f"{game.team.name} vs {game.opponent.name} score is {home_score} - {away_score}"
+        if home_penalties and away_penalties:
+            message += f" with penalties of {home_penalties} - {away_penalties}"
+        return message
 
 
 def get_kabaddi_knockout_stages() -> dict:
