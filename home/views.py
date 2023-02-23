@@ -129,8 +129,7 @@ def scorefootball(request: HttpRequest) -> HttpResponse:
             if isinstance(function_response, HttpResponse):
                 form = UnplayedFootballGamesForm()
                 form.fields["game"].choices = get_unplayed_football_games()
-                template: Template = loader.get_template(
-                    "football_score.html")
+                template: Template = loader.get_template("football_score.html")
                 return HttpResponse(
                     template.render(
                         context={
@@ -138,8 +137,7 @@ def scorefootball(request: HttpRequest) -> HttpResponse:
                             "success": False,
                             "authenticated": request.user.is_authenticated,
                             "error": True,
-                            "error_message": str(function_response.content)[
-                                             2:][:-1],
+                            "error_message": str(function_response.content)[2:][:-1],
                         },
                         request=request,
                     )
@@ -228,8 +226,7 @@ def scorenetball(request: HttpRequest) -> HttpResponse:
             if isinstance(function_response, HttpResponse):
                 form = UnplayedNetballGamesForm()
                 form.fields["game"].choices = get_unplayed_netball_games()
-                template: Template = loader.get_template(
-                    "netball_score.html")
+                template: Template = loader.get_template("netball_score.html")
                 return HttpResponse(
                     template.render(
                         context={
@@ -237,8 +234,7 @@ def scorenetball(request: HttpRequest) -> HttpResponse:
                             "success": False,
                             "authenticated": request.user.is_authenticated,
                             "error": True,
-                            "error_message": str(function_response.content)[
-                                             2:][:-1],
+                            "error_message": str(function_response.content)[2:][:-1],
                         },
                         request=request,
                     )
@@ -327,8 +323,7 @@ def scorecricket(request: HttpRequest) -> HttpResponse:
             if isinstance(function_response, HttpResponse):
                 form = UnplayedCricketGamesForm()
                 form.fields["game"].choices = get_unplayed_cricket_games()
-                template: Template = loader.get_template(
-                    "cricket_score.html")
+                template: Template = loader.get_template("cricket_score.html")
                 return HttpResponse(
                     template.render(
                         context={
@@ -336,8 +331,7 @@ def scorecricket(request: HttpRequest) -> HttpResponse:
                             "success": False,
                             "authenticated": request.user.is_authenticated,
                             "error": True,
-                            "error_message": str(function_response.content)[
-                                             2:][:-1],
+                            "error_message": str(function_response.content)[2:][:-1],
                         },
                         request=request,
                     )
@@ -426,8 +420,7 @@ def scorekabaddi(request: HttpRequest) -> HttpResponse:
             if isinstance(function_response, HttpResponse):
                 form = UnplayedKabaddiGamesForm()
                 form.fields["game"].choices = get_unplayed_kabaddi_games()
-                template: Template = loader.get_template(
-                    "kabaddi_score.html")
+                template: Template = loader.get_template("kabaddi_score.html")
                 return HttpResponse(
                     template.render(
                         context={
@@ -435,8 +428,7 @@ def scorekabaddi(request: HttpRequest) -> HttpResponse:
                             "success": False,
                             "authenticated": request.user.is_authenticated,
                             "error": True,
-                            "error_message": str(function_response.content)[
-                                             2:][:-1],
+                            "error_message": str(function_response.content)[2:][:-1],
                         },
                         request=request,
                     )
@@ -525,8 +517,7 @@ def scorekho(request: HttpRequest) -> HttpResponse:
             if isinstance(function_response, HttpResponse):
                 form = UnplayedKhoGamesForm()
                 form.fields["game"].choices = get_unplayed_kho_games()
-                template: Template = loader.get_template(
-                    "kho_score.html")
+                template: Template = loader.get_template("kho_score.html")
                 return HttpResponse(
                     template.render(
                         context={
@@ -534,8 +525,7 @@ def scorekho(request: HttpRequest) -> HttpResponse:
                             "success": False,
                             "authenticated": request.user.is_authenticated,
                             "error": True,
-                            "error_message": str(function_response.content)[
-                                             2:][:-1],
+                            "error_message": str(function_response.content)[2:][:-1],
                         },
                         request=request,
                     )
@@ -624,8 +614,7 @@ def scorebadminton(request: HttpRequest) -> HttpResponse:
             if isinstance(function_response, HttpResponse):
                 form = UnplayedBadmintonGamesForm()
                 form.fields["game"].choices = get_unplayed_badminton_games()
-                template: Template = loader.get_template(
-                    "badminton_score.html")
+                template: Template = loader.get_template("badminton_score.html")
                 return HttpResponse(
                     template.render(
                         context={
@@ -633,8 +622,7 @@ def scorebadminton(request: HttpRequest) -> HttpResponse:
                             "success": False,
                             "authenticated": request.user.is_authenticated,
                             "error": True,
-                            "error_message": str(function_response.content)[
-                                             2:][:-1],
+                            "error_message": str(function_response.content)[2:][:-1],
                         },
                         request=request,
                     )
