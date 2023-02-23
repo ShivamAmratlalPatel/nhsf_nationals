@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class HelloappConfig(AppConfig):
-    name = 'home'
+    name = "home"

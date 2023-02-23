@@ -2,8 +2,16 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Sport, Chapter, KnockoutStep, FootballTeam, FootballPitch, \
-    FootballSchedule, FootballTable, FootballKnockout
+from .models import (
+    Sport,
+    Chapter,
+    KnockoutStep,
+    FootballTeam,
+    FootballPitch,
+    FootballSchedule,
+    FootballTable,
+    FootballKnockout,
+)
 
 admin.site.register(Sport)
 admin.site.register(Chapter)

@@ -2,8 +2,9 @@ import google_crc32c
 from twilio.rest import Client
 
 
-def access_secret_version(project_id='able-door-377617',
-                          secret_id='django-settings', version_id=3):
+def access_secret_version(
+    project_id="able-door-377617", secret_id="django-settings", version_id=3
+):
     """
     Access the payload for the given secret version if one exists. The version
     can be a version number as a string (e.g. "5") or an alias (e.g. "latest").
@@ -26,54 +27,42 @@ def access_secret_version(project_id='able-door-377617',
     if response.payload.data_crc32c != int(crc32c.hexdigest(), 16):
         print("Data corruption detected.")
         return response
-    return response.payload.data.decode('UTF-8')
+    return response.payload.data.decode("UTF-8")
 
 
 env_variables = access_secret_version()
 
-TWILIO_ACCOUNT_SID = env_variables.split('\n')[2].split('=')[1]
-TWILIO_AUTH_TOKEN = env_variables.split('\n')[3].split('=')[1]
+TWILIO_ACCOUNT_SID = env_variables.split("\n")[2].split("=")[1]
+TWILIO_AUTH_TOKEN = env_variables.split("\n")[3].split("=")[1]
 
 
 def send_message(sport, body):
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
-    if sport == 'football':
+    if sport == "football":
         message = client.messages.create(
-            body=body,
-            from_='+447700164737',
-            to='+447511684882'
+            body=body, from_="+447700164737", to="+447511684882"
         )
-    elif sport == 'netball':
+    elif sport == "netball":
         message = client.messages.create(
-            body=body,
-            from_='+447700164737',
-            to='+447511684882'
+            body=body, from_="+447700164737", to="+447511684882"
         )
-    elif sport == 'kho':
+    elif sport == "kho":
         message = client.messages.create(
-            body=body,
-            from_='+447700164737',
-            to='+447511684882'
+            body=body, from_="+447700164737", to="+447511684882"
         )
-    elif sport == 'kabaddi':
+    elif sport == "kabaddi":
         message = client.messages.create(
-            body=body,
-            from_='+447700164737',
-            to='+447511684882'
+            body=body, from_="+447700164737", to="+447511684882"
         )
-    elif sport == 'badminton':
+    elif sport == "badminton":
         message = client.messages.create(
-            body=body,
-            from_='+447700164737',
-            to='+447511684882'
+            body=body, from_="+447700164737", to="+447511684882"
         )
-    elif sport == 'cricket':
+    elif sport == "cricket":
         message = client.messages.create(
-            body=body,
-            from_='+447700164737',
-            to='+447511684882'
+            body=body, from_="+447700164737", to="+447511684882"
         )
     else:
-        raise ValueError('Sport not found')
+        raise ValueError("Sport not found")
     return message.sid

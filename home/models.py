@@ -52,16 +52,17 @@ class FootballPitch(models.Model):
 
 class FootballSchedule(models.Model):
     schedule_id = models.AutoField(primary_key=True, db_index=True)
-    team = models.ForeignKey(FootballTeam, on_delete=models.CASCADE,
-                             related_name="team")
-    opponent = models.ForeignKey(FootballTeam, on_delete=models.CASCADE,
-                                 related_name="opponent", null=True)
+    team = models.ForeignKey(
+        FootballTeam, on_delete=models.CASCADE, related_name="team"
+    )
+    opponent = models.ForeignKey(
+        FootballTeam, on_delete=models.CASCADE, related_name="opponent", null=True
+    )
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
     time = models.TimeField(null=True)
-    pitch = models.ForeignKey(FootballPitch, on_delete=models.CASCADE,
-                              null=True)
+    pitch = models.ForeignKey(FootballPitch, on_delete=models.CASCADE, null=True)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
@@ -112,8 +113,9 @@ class FootballTable(models.Model):
 class FootballKnockout(models.Model):
     id = models.AutoField(primary_key=True, db_index=True)
     team = models.ForeignKey(FootballTeam, on_delete=models.CASCADE)
-    opponent = models.ForeignKey(FootballTeam, on_delete=models.CASCADE,
-                                 related_name="opponent_id")
+    opponent = models.ForeignKey(
+        FootballTeam, on_delete=models.CASCADE, related_name="opponent_id"
+    )
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
@@ -189,16 +191,15 @@ class NetballPitch(models.Model):
 
 class NetballSchedule(models.Model):
     schedule_id = models.AutoField(primary_key=True, db_index=True)
-    team = models.ForeignKey(NetballTeam, on_delete=models.CASCADE,
-                             related_name="team")
-    opponent = models.ForeignKey(NetballTeam, on_delete=models.CASCADE,
-                                 related_name="opponent", null=True)
+    team = models.ForeignKey(NetballTeam, on_delete=models.CASCADE, related_name="team")
+    opponent = models.ForeignKey(
+        NetballTeam, on_delete=models.CASCADE, related_name="opponent", null=True
+    )
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
     time = models.TimeField(null=True)
-    pitch = models.ForeignKey(NetballPitch, on_delete=models.CASCADE,
-                              null=True)
+    pitch = models.ForeignKey(NetballPitch, on_delete=models.CASCADE, null=True)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
@@ -249,8 +250,9 @@ class NetballTable(models.Model):
 class NetballKnockout(models.Model):
     id = models.AutoField(primary_key=True, db_index=True)
     team = models.ForeignKey(NetballTeam, on_delete=models.CASCADE)
-    opponent = models.ForeignKey(NetballTeam, on_delete=models.CASCADE,
-                                 related_name="opponent_id")
+    opponent = models.ForeignKey(
+        NetballTeam, on_delete=models.CASCADE, related_name="opponent_id"
+    )
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
@@ -326,16 +328,15 @@ class KhoPitch(models.Model):
 
 class KhoSchedule(models.Model):
     schedule_id = models.AutoField(primary_key=True, db_index=True)
-    team = models.ForeignKey(KhoTeam, on_delete=models.CASCADE,
-                             related_name="team")
-    opponent = models.ForeignKey(KhoTeam, on_delete=models.CASCADE,
-                                 related_name="opponent", null=True)
+    team = models.ForeignKey(KhoTeam, on_delete=models.CASCADE, related_name="team")
+    opponent = models.ForeignKey(
+        KhoTeam, on_delete=models.CASCADE, related_name="opponent", null=True
+    )
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
     time = models.TimeField(null=True)
-    pitch = models.ForeignKey(KhoPitch, on_delete=models.CASCADE,
-                              null=True)
+    pitch = models.ForeignKey(KhoPitch, on_delete=models.CASCADE, null=True)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
@@ -386,8 +387,9 @@ class KhoTable(models.Model):
 class KhoKnockout(models.Model):
     id = models.AutoField(primary_key=True, db_index=True)
     team = models.ForeignKey(KhoTeam, on_delete=models.CASCADE)
-    opponent = models.ForeignKey(KhoTeam, on_delete=models.CASCADE,
-                                 related_name="opponent_id")
+    opponent = models.ForeignKey(
+        KhoTeam, on_delete=models.CASCADE, related_name="opponent_id"
+    )
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
@@ -463,16 +465,17 @@ class BadmintonPitch(models.Model):
 
 class BadmintonSchedule(models.Model):
     schedule_id = models.AutoField(primary_key=True, db_index=True)
-    team = models.ForeignKey(BadmintonTeam, on_delete=models.CASCADE,
-                             related_name="team")
-    opponent = models.ForeignKey(BadmintonTeam, on_delete=models.CASCADE,
-                                 related_name="opponent", null=True)
+    team = models.ForeignKey(
+        BadmintonTeam, on_delete=models.CASCADE, related_name="team"
+    )
+    opponent = models.ForeignKey(
+        BadmintonTeam, on_delete=models.CASCADE, related_name="opponent", null=True
+    )
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
     time = models.TimeField(null=True)
-    pitch = models.ForeignKey(BadmintonPitch, on_delete=models.CASCADE,
-                              null=True)
+    pitch = models.ForeignKey(BadmintonPitch, on_delete=models.CASCADE, null=True)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
@@ -523,8 +526,9 @@ class BadmintonTable(models.Model):
 class BadmintonKnockout(models.Model):
     id = models.AutoField(primary_key=True, db_index=True)
     team = models.ForeignKey(BadmintonTeam, on_delete=models.CASCADE)
-    opponent = models.ForeignKey(BadmintonTeam, on_delete=models.CASCADE,
-                                 related_name="opponent_id")
+    opponent = models.ForeignKey(
+        BadmintonTeam, on_delete=models.CASCADE, related_name="opponent_id"
+    )
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
@@ -600,16 +604,15 @@ class KabaddiPitch(models.Model):
 
 class KabaddiSchedule(models.Model):
     schedule_id = models.AutoField(primary_key=True, db_index=True)
-    team = models.ForeignKey(KabaddiTeam, on_delete=models.CASCADE,
-                             related_name="team")
-    opponent = models.ForeignKey(KabaddiTeam, on_delete=models.CASCADE,
-                                 related_name="opponent", null=True)
+    team = models.ForeignKey(KabaddiTeam, on_delete=models.CASCADE, related_name="team")
+    opponent = models.ForeignKey(
+        KabaddiTeam, on_delete=models.CASCADE, related_name="opponent", null=True
+    )
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
     time = models.TimeField(null=True)
-    pitch = models.ForeignKey(KabaddiPitch, on_delete=models.CASCADE,
-                              null=True)
+    pitch = models.ForeignKey(KabaddiPitch, on_delete=models.CASCADE, null=True)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
@@ -660,8 +663,9 @@ class KabaddiTable(models.Model):
 class KabaddiKnockout(models.Model):
     id = models.AutoField(primary_key=True, db_index=True)
     team = models.ForeignKey(KabaddiTeam, on_delete=models.CASCADE)
-    opponent = models.ForeignKey(KabaddiTeam, on_delete=models.CASCADE,
-                                 related_name="opponent_id")
+    opponent = models.ForeignKey(
+        KabaddiTeam, on_delete=models.CASCADE, related_name="opponent_id"
+    )
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
@@ -737,16 +741,15 @@ class CricketPitch(models.Model):
 
 class CricketSchedule(models.Model):
     schedule_id = models.AutoField(primary_key=True, db_index=True)
-    team = models.ForeignKey(CricketTeam, on_delete=models.CASCADE,
-                             related_name="team")
-    opponent = models.ForeignKey(CricketTeam, on_delete=models.CASCADE,
-                                 related_name="opponent", null=True)
+    team = models.ForeignKey(CricketTeam, on_delete=models.CASCADE, related_name="team")
+    opponent = models.ForeignKey(
+        CricketTeam, on_delete=models.CASCADE, related_name="opponent", null=True
+    )
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
     time = models.TimeField(null=True)
-    pitch = models.ForeignKey(CricketPitch, on_delete=models.CASCADE,
-                              null=True)
+    pitch = models.ForeignKey(CricketPitch, on_delete=models.CASCADE, null=True)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
@@ -797,8 +800,9 @@ class CricketTable(models.Model):
 class CricketKnockout(models.Model):
     id = models.AutoField(primary_key=True, db_index=True)
     team = models.ForeignKey(CricketTeam, on_delete=models.CASCADE)
-    opponent = models.ForeignKey(CricketTeam, on_delete=models.CASCADE,
-                                 related_name="opponent_id")
+    opponent = models.ForeignKey(
+        CricketTeam, on_delete=models.CASCADE, related_name="opponent_id"
+    )
     team_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
     played = models.BooleanField(default=False)
