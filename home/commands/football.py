@@ -42,7 +42,8 @@ def generate_schedule() -> None:
         )
 
     teams = (
-        FootballTeam.objects.all().order_by("group", "name").values("team_id", "group")
+        FootballTeam.objects.all().order_by("group", "name").values("team_id",
+                                                                    "group")
     )
 
     # Generate fixtures for each group
@@ -57,7 +58,8 @@ def generate_schedule() -> None:
                 if team["team_id"] != opponent["team_id"]:
                     # If the fixture doesn't already exist create it
                     if not FootballSchedule.objects.filter(
-                            Q(team_id=team["team_id"]) & Q(opponent_id=opponent["team_id"])
+                            Q(team_id=team["team_id"]) & Q(
+                                opponent_id=opponent["team_id"])
                     ).exists():
                         # If the fixture doesn't already exist the other way around
                         # create it
@@ -66,7 +68,8 @@ def generate_schedule() -> None:
                                 & Q(opponent_id=team["team_id"])
                         ).exists():
                             FootballSchedule.objects.update_or_create(
-                                team_id=team["team_id"], opponent_id=opponent["team_id"]
+                                team_id=team["team_id"],
+                                opponent_id=opponent["team_id"]
                             )
 
     # Assign group number as pitch number for each fixture and assign a random time
@@ -76,24 +79,29 @@ def generate_schedule() -> None:
     print("pitches_count: ", pitches_count)
     fixtures = (
         FootballSchedule.objects.filter(played=False)
-        .order_by("team_id")
-        .values("schedule_id", "team_id", "opponent_id", "team__group")
+            .values("schedule_id", "team_id", "opponent_id", "team__group")
     )
 
     group_4_or_5_games = list(fixtures.filter(team__group__in=[4, 5]))
 
-    for i, group in enumerate(fixtures.order_by("team__group").values("team__group").distinct()):
-        group_fixtures = list(fixtures.filter(team__group=group["team__group"]))
+    for i, group in enumerate(
+            fixtures.order_by("team__group").values("team__group").distinct()):
+        group_fixtures = list(
+            fixtures.filter(team__group=group["team__group"]))
+        random.shuffle(group_fixtures)
         pitch = i % pitches_count + 1
         print("pitch: ", pitch, "group: ", group["team__group"])
-        if pitch == 0:
+        if pitch == 0 or pitch > pitches_count or i >= 2:
             pitch = random.randint(1, pitches_count)
         #     For the first game in the group_fixtures, set the time = 0, update it in db and pop it from the list
-        FootballSchedule.objects.filter(schedule_id=group_fixtures[0]["schedule_id"]).update(time="00:00:00",
-                                                                                             pitch_id=pitch)
+        FootballSchedule.objects.filter(
+            schedule_id=group_fixtures[0]["schedule_id"]).update(
+            time="00:00:00",
+            pitch_id=pitch)
         group_fixtures.pop(0)
         while len(group_fixtures) > 0:
-            last_game = FootballSchedule.objects.filter(team__group=group["team__group"], time__isnull=False).order_by(
+            last_game = FootballSchedule.objects.filter(
+                team__group=group["team__group"], time__isnull=False).order_by(
                 "time").values(
                 "time", "team_id", "opponent_id").last()
             condition_hit = False
@@ -101,24 +109,35 @@ def generate_schedule() -> None:
                 if i >= 2:
                     pitch = random.randint(1, pitches_count)
                 last_teams = [last_game["team_id"], last_game["opponent_id"]]
-                if (fixture["team_id"] not in last_teams) and (fixture["opponent_id"] not in last_teams):
-                    FootballSchedule.objects.filter(schedule_id=fixture["schedule_id"]).update(
-                        time=(datetime.datetime.combine(datetime.date.today(), last_game["time"]) + datetime.timedelta(
+                if (fixture["team_id"] not in last_teams) and (
+                        fixture["opponent_id"] not in last_teams):
+                    FootballSchedule.objects.filter(
+                        schedule_id=fixture["schedule_id"]).update(
+                        time=(datetime.datetime.combine(datetime.date.today(),
+                                                        last_game[
+                                                            "time"]) + datetime.timedelta(
                             minutes=30)).time(), pitch_id=pitch)
                     group_fixtures.pop(group_fixtures.index(fixture))
                     condition_hit = True
                     continue
             if not condition_hit:
-                print("condition not hit")
                 pitch = random.randint(1, pitches_count)
+                print("condition not hit", pitch)
                 try:
-                    FootballSchedule.objects.filter(schedule_id=group_4_or_5_games[0]["schedule_id"]).update(
-                    time=(datetime.datetime.combine(datetime.date.today(), last_game["time"]) + datetime.timedelta(
-                        minutes=30)).time(), pitch_id=pitch)
+                    FootballSchedule.objects.filter(
+                        schedule_id=group_4_or_5_games[0][
+                            "schedule_id"]).update(
+                        time=(datetime.datetime.combine(datetime.date.today(),
+                                                        last_game[
+                                                            "time"]) + datetime.timedelta(
+                            minutes=30)).time(), pitch_id=pitch)
                     group_4_or_5_games.pop(0)
                 except IndexError:
-                    FootballSchedule.objects.filter(schedule_id=group_fixtures[0]["schedule_id"]).update(
-                        time=(datetime.datetime.combine(datetime.date.today(), last_game["time"]) + datetime.timedelta(
+                    FootballSchedule.objects.filter(
+                        schedule_id=group_fixtures[0]["schedule_id"]).update(
+                        time=(datetime.datetime.combine(datetime.date.today(),
+                                                        last_game[
+                                                            "time"]) + datetime.timedelta(
                             minutes=30)).time(), pitch_id=pitch)
                     group_fixtures.pop(0)
     # Find the latest game from the db in that group
@@ -163,9 +182,9 @@ def get_football_schedule() -> dict:
 
     schedule = (
         FootballSchedule.objects.select_related("pitch")
-        .all()
-        .order_by("time")
-        .values(
+            .all()
+            .order_by("time")
+            .values(
             "pitch_id__name",
             "team__name",
             "opponent__name",
@@ -198,9 +217,9 @@ def get_football_table() -> dict:
 
     table = (
         FootballTable.objects.all()
-        .select_related("team_id")
-        .order_by("-points", "-goal_difference", "-goals_for", "-played")
-        .values(
+            .select_related("team_id")
+            .order_by("-points", "-goal_difference", "-goals_for", "-played")
+            .values(
             "team_id__name",
             "team_id__group",
             "played",
@@ -214,7 +233,8 @@ def get_football_table() -> dict:
         )
     )
 
-    groups = FootballTeam.objects.all().values("group").distinct().order_by("group")
+    groups = FootballTeam.objects.all().values("group").distinct().order_by(
+        "group")
 
     output = {group["group"]: [] for group in groups}
 
@@ -253,9 +273,10 @@ def update_football_table(team_id: int) -> None:
         initalise_football_table()
 
     team_results = (
-        FootballSchedule.objects.filter(Q(team_id=team_id) | Q(opponent_id=team_id))
-        .filter(played=True)
-        .values("team_id", "opponent_id", "team_score", "opponent_score")
+        FootballSchedule.objects.filter(
+            Q(team_id=team_id) | Q(opponent_id=team_id))
+            .filter(played=True)
+            .values("team_id", "opponent_id", "team_score", "opponent_score")
     )
 
     games_played = len(team_results)
@@ -311,8 +332,9 @@ def get_unplayed_football_games() -> list:
 
     games = (
         FootballSchedule.objects.filter(played=False)
-        .order_by("pitch_id__name", "time")
-        .values("schedule_id", "team__name", "opponent__name", "pitch_id__name")
+            .order_by("pitch_id__name", "time")
+            .values("schedule_id", "team__name", "opponent__name",
+                    "pitch_id__name")
     )
 
     output = [
@@ -325,8 +347,8 @@ def get_unplayed_football_games() -> list:
 
     knockout_games = (
         FootballKnockout.objects.filter(played=False)
-        .order_by("step_id")
-        .values("id", "team__name", "opponent__name", "step__name")
+            .order_by("step_id")
+            .values("id", "team__name", "opponent__name", "step__name")
     )
 
     [
@@ -382,8 +404,8 @@ def generate_quarter_final() -> None:
     # Get top team from each group
     top_teams = (
         FootballTable.objects.all()
-        .order_by("-points_per_game", "-goal_difference", "-goals_for")
-        .values("team_id", "team_id__group")
+            .order_by("-points_per_game", "-goal_difference", "-goals_for")
+            .values("team_id", "team_id__group")
     )
 
     knockout_teams = []
@@ -397,17 +419,17 @@ def generate_quarter_final() -> None:
     while len(knockout_teams) < 8:
         next_best_team = (
             FootballTable.objects.exclude(team_id__in=knockout_teams)
-            .order_by("-points_per_game", "-goal_difference", "-goals_for")
-            .values("team_id")
-            .first()
+                .order_by("-points_per_game", "-goal_difference", "-goals_for")
+                .values("team_id")
+                .first()
         )
         knockout_teams.append(next_best_team["team_id"])
 
     # Order these teams based on average points per games
     knockout_teams = (
         FootballTable.objects.filter(team_id__in=knockout_teams)
-        .order_by("-points_per_game", "-goal_difference", "-goals_for")
-        .values("team_id")
+            .order_by("-points_per_game", "-goal_difference", "-goals_for")
+            .values("team_id")
     )
 
     # Create the knockout table
