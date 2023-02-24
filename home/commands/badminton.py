@@ -1,17 +1,17 @@
-import datetime
 import random
 
 from django import forms
+from django.core.exceptions import BadRequest
+from django.db.models import Q
+from django.http import HttpResponse
 
 from ..models import (
+    BadmintonKnockout,
     BadmintonPitch,
     BadmintonSchedule,
     BadmintonTable,
     BadmintonTeam,
-    BadmintonKnockout,
 )
-from django.core.exceptions import BadRequest
-from django.db.models import Q
 
 number_of_groups = 5
 number_of_pitches = 4
@@ -242,14 +242,8 @@ class UnplayedBadmintonGamesForm(forms.Form):
 
     choices = get_unplayed_badminton_games()
     game = forms.ChoiceField(label="Game", choices=choices)
-    team_1_score = forms.IntegerField(label="Team 1 Goals", min_value=0)
-    team_2_score = forms.IntegerField(label="Team 2 Goals", min_value=0)
-    team_1_penalty = forms.IntegerField(
-        label="Team 1 Penalties", required=False, min_value=0
-    )
-    team_2_penalty = forms.IntegerField(
-        label="Team 2 Penalties", required=False, min_value=0
-    )
+    team_1_score = forms.IntegerField(label="Team 1 Points", min_value=0)
+    team_2_score = forms.IntegerField(label="Team 2 Points", min_value=0)
 
 
 def generate_quarter_final() -> None:
@@ -431,17 +425,17 @@ def log_badminton_score(
     away_score: int,
     home_penalties: int,
     away_penalties: int,
-) -> str:
+) -> HttpResponse | str:
     """Log a badminton score"""
 
     if not schedule_id and schedule_id != 0:
         raise BadRequest("Schedule ID is required")
 
-    if not away_score and home_score != 0:
-        raise BadRequest("Home score is required")
+    if not home_score and home_score != 0:
+        return HttpResponse(content="Home score is required")
 
     if not away_score and away_score != 0:
-        raise BadRequest("Away score is required")
+        return HttpResponse(content="Away score is required")
 
     if BadmintonSchedule.objects.filter(played=False).exists():
         BadmintonSchedule.objects.filter(schedule_id=schedule_id).update(
@@ -461,12 +455,8 @@ def log_badminton_score(
         return message
     else:
         if home_score == away_score:
-            if home_penalties is None or away_penalties is None:
-                raise BadRequest("Penalties are required")
-            if not home_penalties and not away_penalties:
-                raise BadRequest("Penalties are required")
-            elif home_penalties == away_penalties:
-                raise BadRequest("Penalties cannot be equal")
+            return HttpResponse(
+                content="Scores cannot be equal in quarter final")
         BadmintonKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
             opponent_score=away_score,

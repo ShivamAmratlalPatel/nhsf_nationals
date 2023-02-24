@@ -1,10 +1,11 @@
 import random
 
 from django import forms
-
-from ..models import KhoPitch, KhoSchedule, KhoTable, KhoTeam, KhoKnockout
 from django.core.exceptions import BadRequest
 from django.db.models import Q
+from django.http import HttpResponse
+
+from ..models import KhoKnockout, KhoPitch, KhoSchedule, KhoTable, KhoTeam
 
 number_of_groups = 4
 
@@ -235,10 +236,8 @@ class UnplayedKhoGamesForm(forms.Form):
 
     choices = get_unplayed_kho_games()
     game = forms.ChoiceField(label="Game", choices=choices)
-    team_1_score = forms.IntegerField(label="Team 1 Goals")
-    team_2_score = forms.IntegerField(label="Team 2 Goals")
-    team_1_penalty = forms.IntegerField(label="Team 1 Penalties", required=False)
-    team_2_penalty = forms.IntegerField(label="Team 2 Penalties", required=False)
+    team_1_score = forms.IntegerField(label="Team 1 Points")
+    team_2_score = forms.IntegerField(label="Team 2 Points")
 
 
 def generate_quarter_final() -> None:
@@ -420,17 +419,17 @@ def log_kho_score(
     away_score: int,
     home_penalties: int,
     away_penalties: int,
-) -> str:
+) -> HttpResponse | str:
     """Log a kho score"""
 
     if not schedule_id and schedule_id != 0:
         raise BadRequest("Schedule ID is required")
 
-    if not away_score and home_score != 0:
-        raise BadRequest("Home score is required")
+    if not home_score and home_score != 0:
+        return HttpResponse(content="Home score is required")
 
     if not away_score and away_score != 0:
-        raise BadRequest("Away score is required")
+        return HttpResponse(content="Away score is required")
 
     if KhoSchedule.objects.filter(played=False).exists():
         KhoSchedule.objects.filter(schedule_id=schedule_id).update(
@@ -446,12 +445,8 @@ def log_kho_score(
         return message
     else:
         if home_score == away_score:
-            if home_penalties is None or away_penalties is None:
-                raise BadRequest("Penalties are required")
-            if not home_penalties and not away_penalties:
-                raise BadRequest("Penalties are required")
-            elif home_penalties == away_penalties:
-                raise BadRequest("Penalties cannot be equal")
+            return HttpResponse(
+                content="Scores cannot be equal in quarter final")
         KhoKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
             opponent_score=away_score,

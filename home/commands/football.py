@@ -2,17 +2,17 @@ import datetime
 import random
 
 from django import forms
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.core.exceptions import BadRequest
+from django.db.models import Q
+from django.http import HttpResponse
 
 from ..models import (
+    FootballKnockout,
     FootballPitch,
     FootballSchedule,
     FootballTable,
     FootballTeam,
-    FootballKnockout,
 )
-from django.core.exceptions import BadRequest
-from django.db.models import Q
 
 number_of_groups = 5
 
@@ -429,12 +429,12 @@ def generate_final() -> None:
 
 
 def log_football_score(
-        schedule_id: int,
-        home_score: int,
-        away_score: int,
-        home_penalties: int,
-        away_penalties: int,
-) -> str:
+    schedule_id: int,
+    home_score: int,
+    away_score: int,
+    home_penalties: int,
+    away_penalties: int,
+) -> HttpResponse | str:
     """Log a football score"""
 
     if home_score == away_score and home_score == 1000:
@@ -446,11 +446,11 @@ def log_football_score(
     if not schedule_id and schedule_id != 0:
         raise BadRequest("Schedule ID is required")
 
-    if not away_score and home_score != 0:
-        raise BadRequest("Home score is required")
+    if not home_score and home_score != 0:
+        return HttpResponse(content="Home score is required")
 
     if not away_score and away_score != 0:
-        raise BadRequest("Away score is required")
+        return HttpResponse(content="Away score is required")
 
     if FootballSchedule.objects.filter(played=False).exists():
         FootballSchedule.objects.filter(schedule_id=schedule_id).update(
@@ -469,15 +469,13 @@ def log_football_score(
         message = f"{game.team.name} vs {game.opponent.name} with a score of {home_score} - {away_score}"
         return message
     else:
-        print(home_score, away_score, home_penalties, away_penalties)
         if home_score == away_score:
             if home_penalties is None or away_penalties is None:
-                print("Penalties are required")
-                return HttpResponseBadRequest("Penalties are required")
+                return HttpResponse(content="Both penalties are required")
             if not home_penalties and not away_penalties:
-                return HttpResponseBadRequest()
+                return HttpResponse(content="Penalties are required")
             elif home_penalties == away_penalties:
-                return HttpResponseBadRequest()
+                return HttpResponse(content="Penalties can't be equal")
         FootballKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
             opponent_score=away_score,

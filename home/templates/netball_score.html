@@ -7,24 +7,17 @@
 
     <h2>Netball Scoring</h2>
 
-    <!--Show success message if success is true-->
-{% if success %}
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="liveToast" class="toast" role="alert" aria-live="assertive"
-             aria-atomic="true">
-            <div class="toast-header">
-                <img src="..." class="rounded me-2" alt="...">
-                <strong class="me-auto">Bootstrap</strong>
-                <small>11 mins ago</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                Hello, world! This is a toast message.
-            </div>
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error_message }}
         </div>
-    </div>
-{% endif %}
+    {% endif %}
+
+    {% if success %}
+        <div class="alert alert-success" role="alert">
+            Successfully submitted score!
+        </div>
+    {% endif %}
 
     <!--Create a form to log scores-->
     <div class="container">

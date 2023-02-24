@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase, Client
+from django.test import Client, SimpleTestCase
 
 
 class ViewTests(SimpleTestCase):
