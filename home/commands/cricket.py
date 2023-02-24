@@ -301,8 +301,8 @@ class UnplayedCricketGamesForm(forms.Form):
 
     choices = get_unplayed_cricket_games()
     game = forms.ChoiceField(label="Game", choices=choices)
-    team_1_score = forms.IntegerField(label="Team 1 Goals", min_value=0)
-    team_2_score = forms.IntegerField(label="Team 2 Goals", min_value=0)
+    team_1_score = forms.IntegerField(label="Team 1 Runs", min_value=0)
+    team_2_score = forms.IntegerField(label="Team 2 Runs", min_value=0)
     team_1_penalty = forms.IntegerField(
         label="Team 1 Super Over", required=False, min_value=0
     )

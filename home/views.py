@@ -131,19 +131,23 @@ def scorefootball(request: HttpRequest) -> HttpResponse:
                 form.fields["game"].choices = get_unplayed_football_games()
                 template: Template = loader.get_template(
                     "football_score.html")
-                return HttpResponse(
-                    template.render(
-                        context={
-                            "form": form,
-                            "success": False,
-                            "authenticated": request.user.is_authenticated,
-                            "error": True,
-                            "error_message": str(function_response.content)[
-                                             2:][:-1],
-                        },
-                        request=request,
-                    )
+            context = {
+                          "form": form,
+                          "success": False,
+                          "authenticated": request.user.is_authenticated,
+                          "error": False,
+                          "error_message": str(function_response.content)[2:][:-1],
+                      }
+            if 'Success' in str(function_response.content):
+                context['success'] = True
+            else:
+                context['error'] = True
+            return HttpResponse(
+                template.render(
+                    context=context,
+                    request=request,
                 )
+            )
             # Return football page
             return redirect("/football/")
         else:
@@ -230,19 +234,23 @@ def scorenetball(request: HttpRequest) -> HttpResponse:
                 form.fields["game"].choices = get_unplayed_netball_games()
                 template: Template = loader.get_template(
                     "netball_score.html")
-                return HttpResponse(
-                    template.render(
-                        context={
-                            "form": form,
-                            "success": False,
-                            "authenticated": request.user.is_authenticated,
-                            "error": True,
-                            "error_message": str(function_response.content)[
-                                             2:][:-1],
-                        },
-                        request=request,
-                    )
+            context = {
+                          "form": form,
+                          "success": False,
+                          "authenticated": request.user.is_authenticated,
+                          "error": False,
+                          "error_message": str(function_response.content)[2:][:-1],
+                      }
+            if 'Success' in str(function_response.content):
+                context['success'] = True
+            else:
+                context['error'] = True
+            return HttpResponse(
+                template.render(
+                    context=context,
+                    request=request,
                 )
+            )
             # Return netball page
             return redirect("/netball/")
         else:
@@ -289,8 +297,7 @@ def logcricketscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception as e:
-                print(e)
+            except Exception:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
@@ -329,19 +336,23 @@ def scorecricket(request: HttpRequest) -> HttpResponse:
                 form.fields["game"].choices = get_unplayed_cricket_games()
                 template: Template = loader.get_template(
                     "cricket_score.html")
-                return HttpResponse(
-                    template.render(
-                        context={
-                            "form": form,
-                            "success": False,
-                            "authenticated": request.user.is_authenticated,
-                            "error": True,
-                            "error_message": str(function_response.content)[
-                                             2:][:-1],
-                        },
-                        request=request,
-                    )
+            context = {
+                          "form": form,
+                          "success": False,
+                          "authenticated": request.user.is_authenticated,
+                          "error": False,
+                          "error_message": str(function_response.content)[2:][:-1],
+                      }
+            if 'Success' in str(function_response.content):
+                context['success'] = True
+            else:
+                context['error'] = True
+            return HttpResponse(
+                template.render(
+                    context=context,
+                    request=request,
                 )
+            )
             # Return cricket page
             return redirect("/cricket/")
         else:
@@ -388,8 +399,7 @@ def logkabaddiscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception as e:
-                print(e)
+            except Exception:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
@@ -428,19 +438,23 @@ def scorekabaddi(request: HttpRequest) -> HttpResponse:
                 form.fields["game"].choices = get_unplayed_kabaddi_games()
                 template: Template = loader.get_template(
                     "kabaddi_score.html")
-                return HttpResponse(
-                    template.render(
-                        context={
-                            "form": form,
-                            "success": False,
-                            "authenticated": request.user.is_authenticated,
-                            "error": True,
-                            "error_message": str(function_response.content)[
-                                             2:][:-1],
-                        },
-                        request=request,
-                    )
+            context = {
+                          "form": form,
+                          "success": False,
+                          "authenticated": request.user.is_authenticated,
+                          "error": False,
+                          "error_message": str(function_response.content)[2:][:-1],
+                      }
+            if 'Success' in str(function_response.content):
+                context['success'] = True
+            else:
+                context['error'] = True
+            return HttpResponse(
+                template.render(
+                    context=context,
+                    request=request,
                 )
+            )
             # Return kabaddi page
             return redirect("/kabaddi/")
         else:
@@ -487,8 +501,7 @@ def logkhoscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception as e:
-                print(e)
+            except Exception:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
@@ -522,26 +535,27 @@ def scorekho(request: HttpRequest) -> HttpResponse:
     if request.user.is_authenticated:
         if request.method == "POST":
             function_response = logkhoscore(request)
-            if isinstance(function_response, HttpResponse):
-                form = UnplayedKhoGamesForm()
-                form.fields["game"].choices = get_unplayed_kho_games()
-                template: Template = loader.get_template(
-                    "kho_score.html")
-                return HttpResponse(
-                    template.render(
-                        context={
-                            "form": form,
-                            "success": False,
-                            "authenticated": request.user.is_authenticated,
-                            "error": True,
-                            "error_message": str(function_response.content)[
-                                             2:][:-1],
-                        },
-                        request=request,
-                    )
+            form = UnplayedKhoGamesForm()
+            form.fields["game"].choices = get_unplayed_kho_games()
+            template: Template = loader.get_template(
+                "kho_score.html")
+            context = {
+                          "form": form,
+                          "success": False,
+                          "authenticated": request.user.is_authenticated,
+                          "error": False,
+                          "error_message": str(function_response.content)[2:][:-1],
+                      }
+            if 'Success' in str(function_response.content):
+                context['success'] = True
+            else:
+                context['error'] = True
+            return HttpResponse(
+                template.render(
+                    context=context,
+                    request=request,
                 )
-            # Return kho page
-            return redirect("/kho/")
+            )
         else:
             form = UnplayedKhoGamesForm()
             form.fields["game"].choices = get_unplayed_kho_games()
@@ -586,8 +600,7 @@ def logbadmintonscore(request: HttpRequest) -> HttpResponse:
             try:
                 home_penalty_score = int(str(request.POST["team_1_penalty"]))
                 away_penalty_score = int(str(request.POST["team_2_penalty"]))
-            except Exception as e:
-                print(e)
+            except Exception:
                 home_penalty_score = None
                 away_penalty_score = None
             finally:
@@ -626,19 +639,23 @@ def scorebadminton(request: HttpRequest) -> HttpResponse:
                 form.fields["game"].choices = get_unplayed_badminton_games()
                 template: Template = loader.get_template(
                     "badminton_score.html")
-                return HttpResponse(
-                    template.render(
-                        context={
-                            "form": form,
-                            "success": False,
-                            "authenticated": request.user.is_authenticated,
-                            "error": True,
-                            "error_message": str(function_response.content)[
-                                             2:][:-1],
-                        },
-                        request=request,
-                    )
+            context = {
+                          "form": form,
+                          "success": False,
+                          "authenticated": request.user.is_authenticated,
+                          "error": False,
+                          "error_message": str(function_response.content)[2:][:-1],
+                      }
+            if 'Success' in str(function_response.content):
+                context['success'] = True
+            else:
+                context['error'] = True
+            return HttpResponse(
+                template.render(
+                    context=context,
+                    request=request,
                 )
+            )
             # Return badminton page
             return redirect("/badminton/")
         else:
