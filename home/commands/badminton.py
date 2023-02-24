@@ -305,14 +305,8 @@ class UnplayedBadmintonGamesForm(forms.Form):
 
     choices = get_unplayed_badminton_games()
     game = forms.ChoiceField(label="Game", choices=choices)
-    team_1_score = forms.IntegerField(label="Team 1 Goals", min_value=0)
-    team_2_score = forms.IntegerField(label="Team 2 Goals", min_value=0)
-    team_1_penalty = forms.IntegerField(
-        label="Team 1 Penalties", required=False, min_value=0
-    )
-    team_2_penalty = forms.IntegerField(
-        label="Team 2 Penalties", required=False, min_value=0
-    )
+    team_1_score = forms.IntegerField(label="Team 1 Points", min_value=0)
+    team_2_score = forms.IntegerField(label="Team 2 Points", min_value=0)
 
 
 def generate_quarter_final() -> None:
