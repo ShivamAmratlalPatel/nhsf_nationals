@@ -12,7 +12,7 @@ from ..models import (
 from django.core.exceptions import BadRequest
 from django.db.models import Q
 
-number_of_groups = 3
+number_of_groups = 4
 
 
 def randomise_teams() -> None:
