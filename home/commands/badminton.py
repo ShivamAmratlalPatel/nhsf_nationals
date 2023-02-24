@@ -518,12 +518,8 @@ def log_badminton_score(
         return message
     else:
         if home_score == away_score:
-            if home_penalties is None or away_penalties is None:
-                return HttpResponse(content="Both penalties are required")
-            if not home_penalties and not away_penalties:
-                return HttpResponse(content="Penalties are required")
-            elif home_penalties == away_penalties:
-                return HttpResponse(content="Penalties can't be equal")
+            return HttpResponse(
+                content="Scores cannot be equal in quarter final")
         BadmintonKnockout.objects.filter(id=schedule_id).update(
             team_score=home_score,
             opponent_score=away_score,
