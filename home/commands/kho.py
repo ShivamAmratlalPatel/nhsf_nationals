@@ -20,7 +20,6 @@ def randomise_teams() -> None:
                 name=name["name"])
 
 
-
 def initalise_kho_table() -> None:
     """Initalise the kho table"""
 
@@ -72,7 +71,7 @@ def get_kho_schedule() -> dict:
             {
                 "game": f"{game['team__name']} vs {game['opponent__name']}",
                 "time": game["time"].strftime("%H:%M"),
-                "result": f"{game['team_score']} - {game['opponent_score']}",
+                "result": f"{game['team_score'] / 2 if game['team_score'] is not None else game['team_score']} - {game['opponent_score'] / 2 if game['opponent_score'] is not None else game['opponent_score']}",
                 "played": game["played"],
             }
         )
@@ -115,9 +114,9 @@ def get_kho_table() -> dict:
                 "won": team["won"],
                 "drawn": team["drawn"],
                 "lost": team["lost"],
-                "goals_for": team["goals_for"],
-                "goals_against": team["goals_against"],
-                "goal_difference": team["goal_difference"],
+                "goals_for": team["goals_for"] / 2,
+                "goals_against": team["goals_against"] / 2,
+                "goal_difference": team["goal_difference"] / 2,
                 "points": team["points"],
             }
         )
@@ -388,8 +387,8 @@ def generate_final() -> None:
     """
 
     if (
-        KhoKnockout.objects.filter(step_id=5).exists()
-        or KhoKnockout.objects.filter(step_id=6).exists()
+            KhoKnockout.objects.filter(step_id=5).exists()
+            or KhoKnockout.objects.filter(step_id=6).exists()
     ):
         if KhoKnockout.objects.filter(step_id=5, played=False).exists():
             return
@@ -414,11 +413,11 @@ def generate_final() -> None:
 
 
 def log_kho_score(
-    schedule_id: int,
-    home_score: int,
-    away_score: int,
-    home_penalties: int,
-    away_penalties: int,
+        schedule_id: int,
+        home_score: int,
+        away_score: int,
+        home_penalties: int,
+        away_penalties: int,
 ) -> HttpResponse | str:
     """Log a kho score"""
 

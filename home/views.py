@@ -511,10 +511,6 @@ def logkhoscore(request: HttpRequest) -> HttpResponse:
                 )
                 if isinstance(score_log, HttpResponse):
                     return score_log
-                send_message(
-                    "kho",
-                    f"{request.user.first_name} {request.user.last_name} has logged kho game {score_log}",
-                )
                 return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
