@@ -43,25 +43,43 @@ def send_message(sport, body):
         message = client.messages.create(
             body=body, from_="+447700164737", to="+447511684882"
         )
+        message = client.messages.create(
+            body=body, from_="+447700164737", to="+447776531237"
+        )
     elif sport == "netball":
         message = client.messages.create(
             body=body, from_="+447700164737", to="+447511684882"
+        )
+        message = client.messages.create(
+            body=body, from_="+447700164737", to="+447776531237"
         )
     elif sport == "kho":
         message = client.messages.create(
             body=body, from_="+447700164737", to="+447511684882"
         )
+        message = client.messages.create(
+            body=body, from_="+447700164737", to="+447776531237"
+        )
     elif sport == "kabaddi":
         message = client.messages.create(
             body=body, from_="+447700164737", to="+447511684882"
+        )
+        message = client.messages.create(
+            body=body, from_="+447700164737", to="+447776531237"
         )
     elif sport == "badminton":
         message = client.messages.create(
             body=body, from_="+447700164737", to="+447511684882"
         )
+        message = client.messages.create(
+            body=body, from_="+447700164737", to="+447776531237"
+        )
     elif sport == "cricket":
         message = client.messages.create(
             body=body, from_="+447700164737", to="+447511684882"
+        )
+        message = client.messages.create(
+            body=body, from_="+447700164737", to="+447776531237"
         )
     else:
         raise ValueError("Sport not found")
