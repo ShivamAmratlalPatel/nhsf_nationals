@@ -412,10 +412,6 @@ def logkabaddiscore(request: HttpRequest) -> HttpResponse:
                 )
                 if isinstance(score_log, HttpResponse):
                     return score_log
-                send_message(
-                    "kabaddi",
-                    f"{request.user.first_name} {request.user.last_name} has logged kabaddi game {score_log}",
-                )
                 return HttpResponse("Success")
         except KeyError:
             return HttpResponse("Missing data")
