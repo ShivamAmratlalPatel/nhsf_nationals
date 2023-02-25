@@ -53,6 +53,9 @@ def send_message(sport, body):
         message = client.messages.create(
             body=body, from_="+447700164737", to="+447776531237"
         )
+        message = client.messages.create(
+            body=body, from_="+447700164737", to="+447591410444"
+        )
     elif sport == "kho":
         message = client.messages.create(
             body=body, from_="+447700164737", to="+447511684882"
