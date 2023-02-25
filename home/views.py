@@ -475,6 +475,7 @@ def scorekabaddi(request: HttpRequest) -> HttpResponse:
         raise PermissionDenied
 
 
+@login_required
 def kho(request: HttpRequest) -> HttpResponse:
     """Return the kho.html template in template/home"""
 
