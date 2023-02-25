@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 
 
@@ -331,8 +332,8 @@ class KhoSchedule(models.Model):
     opponent = models.ForeignKey(
         KhoTeam, on_delete=models.CASCADE, related_name="opponent", null=True
     )
-    team_score = models.IntegerField(null=True)
-    opponent_score = models.IntegerField(null=True)
+    team_score = models.DecimalField(decimal_places=1, max_digits=4, null=True)
+    opponent_score = models.DecimalField(decimal_places=1, max_digits=4, null=True)
     played = models.BooleanField(default=False)
     time = models.TimeField(null=True)
     pitch = models.ForeignKey(KhoPitch, on_delete=models.CASCADE, null=True)
@@ -372,9 +373,9 @@ class KhoTable(models.Model):
     won = models.IntegerField()
     drawn = models.IntegerField()
     lost = models.IntegerField()
-    goals_for = models.IntegerField()
-    goals_against = models.IntegerField()
-    goal_difference = models.IntegerField()
+    goals_for = models.DecimalField(decimal_places=1, max_digits=4, null=True)
+    goals_against = models.DecimalField(decimal_places=1, max_digits=4, null=True)
+    goal_difference = models.DecimalField(decimal_places=1, max_digits=4, null=True)
     points = models.IntegerField()
     points_per_game = models.DecimalField(max_digits=7, decimal_places=4)
     is_deleted = models.BooleanField(default=False)

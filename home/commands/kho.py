@@ -236,8 +236,8 @@ class UnplayedKhoGamesForm(forms.Form):
 
     choices = get_unplayed_kho_games()
     game = forms.ChoiceField(label="Game", choices=choices)
-    team_1_score = forms.IntegerField(label="Team 1 Points")
-    team_2_score = forms.IntegerField(label="Team 2 Points")
+    team_1_score = forms.DecimalField(label="Team 1 Points")
+    team_2_score = forms.DecimalField(label="Team 2 Points")
 
 
 def generate_quarter_final() -> None:
